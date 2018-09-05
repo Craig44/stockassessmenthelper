@@ -1,4 +1,4 @@
-#' @description r_lnorm: Generate iid lognormal draws with mean (mu) and sigma in the same manner as CASAL
+#' Generates iid lognormal draws with mean (mu) and sigma in the same manner as CASAL
 #' @param N <int>: number of draws
 #' @param Expectation <double>: The Expectation of the distribution, this is not the mu parameter because for the lognormal distribution the expectation is not the mean parameter.
 #' @param cv <double>: The coeficent of variation of the distribution
@@ -56,7 +56,7 @@ lognormal_CI = function(Mean, cv ,CI = 0.95) {
   return(list("upper" = U_CI, "lower" = L_CI))
 }
 
-#' @function lnorm_prior: calculate the log-likelihood contribution for the log-normal prior in CASAL
+#' calculate the log-likelihood contribution for the log-normal prior in CASAL
 #' @param X <double>: value/'s to calculate the prior for
 #' @param Expectation <double>: The Expectation of the distribution, this is not the mu parameter because for the lognormal distribution the expectation is not the mean parameter.
 #' @param sigma <double>: The standard deviation of the distribution (in log space)

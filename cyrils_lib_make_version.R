@@ -15,7 +15,7 @@ cat("Description: A set of R functions for manipulating data and distributions\n
 cat("Maintainer: contact Author <craig.marsh10@gmail.com>\n",file=filename,append=TRUE)
 cat("LazyData: true\n",file=filename,append=TRUE)
 cat("Imports:\n",file=filename,append=TRUE)
-cat("\t dplyr\n",file=filename,append=TRUE)
+cat("\t ggplot2,\n\t reshape2\n",file=filename,append=TRUE)
 
 # Create R function to return R library version number
 filename<-"cyrils/R/Version.R"
@@ -28,9 +28,8 @@ cat("}\n",file=filename,append=T)
 cat(paste("Version",VERSION),file="cyrils.html")
 
 # Call script to transfer data-raw -> data as .RData
-setwd("C:/Users/marshc/OneDrive - NIWA/RLibraries/MISC_lib/cyrils/data-raw/")
+setwd("C:/Work/Software/MiscFunsForR/cyrils/data-raw/")
 source("CopyOverToData.R")
-
 # Exit
 q()
 
