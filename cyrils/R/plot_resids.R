@@ -6,7 +6,7 @@
 #' @param years numeric vector of years for each row.
 #' @return a ggplot image.
 #' @export
-plot.resids = function(resids_matrix, bin_labels, years, show_legend = TRUE) {
+plot_resids = function(resids_matrix, bin_labels, years, show_legend = TRUE) {
   if (nrow(resids_matrix) != length(years)) {
     stop(paste0("rows of matrix = '", nrow(resids_matrix),"' and number of years supplied = '",length(years),"' these must be the same"))
   }

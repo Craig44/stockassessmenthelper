@@ -1,7 +1,7 @@
 Package: cyrils
 Title: A R package of useful functions
 Version: 1.0
-Date: 2018-09-06
+Date: 2018-09-10
 Author: C. Marsh
 Description: A set of R functions for manipulating data and distributions
 Maintainer: contact Author <craig.marsh10@gmail.com>

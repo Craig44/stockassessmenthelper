@@ -8,7 +8,7 @@
 #' @export
 
 
-plot.trace <- function(x,ylim=NULL,m=100,type="p",xlab="Iterations",ylab="",title=""){
+plot_trace <- function(x,ylim=NULL,m=100,type="p",xlab="Iterations",ylab="",title=""){
   
   if(is.null(ylim)) ylim=range(x)
   plot(x,pch=" ",ylim=ylim,type = type,xlab=xlab,ylab=ylab,las=1)

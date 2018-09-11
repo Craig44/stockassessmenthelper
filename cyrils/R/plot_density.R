@@ -3,7 +3,7 @@
 #' @param x variable you want to plot
 #' @export
 
-plot.density = function(x,xlab="",ylab="",xlim=NULL,ylim=NULL,title="",lty=1,lwd=2,col="black",vertLines=NULL,vertLines.col=NULL,vertLines.lty=NULL,plot.labels=T,add=F){
+plot_density = function(x,xlab="",ylab="",xlim=NULL,ylim=NULL,title="",lty=1,lwd=2,col="black",vertLines=NULL,vertLines.col=NULL,vertLines.lty=NULL,plot.labels=T,add=F){
   library(KernSmooth)
   h <- dpik(x)
   est <- bkde(x,bandwidth=h)
