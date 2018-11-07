@@ -5,7 +5,7 @@ R CMD build --force cyrils
 R CMD INSTALL --build cyrils
 
 del cyrils.html
-
+rm cyrils.html
 
 
 
