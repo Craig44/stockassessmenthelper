@@ -6,7 +6,7 @@ There is also a few functions for interrogating CASAL models.
 ```r
 devtools::install_github("Craig44/stockassessmenthelper")
 ```
-An issue you might find when installing this, is it has dependencies with R packages that are not cran i.e. `library(casal)` and `library(DataWeighting)`. To get these packages email casal2@niwa.co.nz, the casal package can be found [here](https://casal2.github.io/casal/).
+An issue you might find when installing this, is it has dependencies with R packages that are not on CRAN i.e. `library(casal)`. To get these package either email casal2@niwa.co.nz, or you can download it from here [here](https://casal2.github.io/casal/).
 
 ## Query Functionality
 Once the library is installed you can query the functionality `library(help="stockassessmenthelper")` also see the vignette with the command `browseVignettes("stockassessmenthelper")`
