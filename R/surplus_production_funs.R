@@ -1,7 +1,6 @@
-library(MASS)
-
 #' @title simulate_SPM
-#' @description Returns a list of model quantiteis and observations that can be used as an operating model
+#' @description simulate a surplus production model, maybe fletchers?
+#' @return Returns a list of model quantiteis and observations that can be used as an operating model
 #' @param theta <real> starting exploited biomass
 #' @param r <real> intrinsic growth parameter.
 #' @param m <real> Shape parameter for the surplus production function
@@ -12,7 +11,7 @@ library(MASS)
 #' @param catchability <vector> a scalar to generate the relative index observation
 #' @param proj_years int number of projection years
 #' @param proj_u vector<proj_years> (length 1 or proj_years) 
-#' 
+#' @export
 simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc_std, proj_years, proj_u, process_error = NULL) {
   ## do some checks up front
   Y = length(exploitation) + 1; ## one less catch than year
@@ -51,19 +50,21 @@ simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc
 }
 
 #' @title project_SPM
-#' @description Returns a list of model quantiteis and observations that can be used as an operating model
+#' @description Given an estimated model, will project forward proj_years and simulate data. Uncertainty comes from estimated parameters, as well as the process error which is assumed to be estimated
+#' @return Returns a list of model quantiteis and observations that can be used as an operating model
 #' @param fixed_effect_estimates <vector> MLE estimates
 #' @param covariance_estimates <matrix> MLE standard errors, must match order of parameters fixed_effect_estimates
 #' @param proj_years int number of projection years
 #' @param n_sims int number random draws 
 #' @param B_Y list 'mu' MLE derived quantity and 'sd'
-#' 
+#' @export
+#' @importFrom MASS mvrnorm
 project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates = matrix(), proj_years,  m, n_sims, B_Y = list()) {
   ## do some checks up front
   if(!all(names(B_Y) %in% c("mu","sd")))
     error("names of B_y needs a name 'mu' and 'sd'")
   start_biomass = rnorm(n_sims, B_Y$mu, B_Y$sd);
-  sim_pars = MASS::mvrnorm(n_sims, fixed_effect_estimates, covariance_estimates)
+  sim_pars = mvrnorm(n_sims, fixed_effect_estimates, covariance_estimates)
   ## projection
   projected_biomass = matrix(NA, nrow = n_sims, ncol = proj_years + 1)
   projected_catches = matrix(NA, nrow = n_sims, ncol = proj_years)
@@ -82,8 +83,8 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
 
 
 #' @title surplus_production_model_sigma
-#' @description Returns a list of model quantities and observations that can be used as an operating model
-#' Different from the above uses a standard deviation for process error instead of CV
+#' @description simulates a surplus production model can be used as an operating model, Different from the above uses a standard deviation for process error instead of CV
+#' @return Returns a list of model quantities and observations that can be used as an operating model
 #' @param B1 <real> starting exploited biomass
 #' @param r <real> intrinsic growth parameter.
 #' @param k <real> carrying capacity parameter.
@@ -93,7 +94,7 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
 #' @param process_std (optional) standard deviation for process deviations corrections
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
-#' 
+#' @export
 surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL) {
   set.seed(seed)
   ## do some checks up front
@@ -144,10 +145,10 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
   return(list(exploitation = exploitation, sd = obs_std, surplus_production = surplus_production, expected =  predicted_biomass * catchability, obs = observations, biomass = predicted_biomass, catches = catches))
 }
 
-
-#' @title surplus_production_model_sigma
-#' @description Returns a list of model quantities and observations that can be used as an operating model
-#' Different from the above uses a standard deviation for process error instead of CV
+#' @title general_surplus_production_model_sigma
+#' @description that can be used as an operating model
+#' Different from the above uses a standard deviation for process error instead of CV and also allow for fishing to be input as both catch and exploitation.
+#' @return Returns a list of model quantities and observations 
 #' @param B1 <real> starting exploited biomass
 #' @param r <real> intrinsic growth parameter.
 #' @param k <real> carrying capacity parameter.
@@ -159,7 +160,7 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
 #' @param process_std (optional) standard deviation for process deviations corrections
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
-#' 
+#' @export
 
 general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catches = NULL, exploitation = NULL, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL, n_obs_series = 1) {
   F_method = NULL
@@ -250,7 +251,7 @@ general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catche
 #' @param pro_std <real> lognormal standard deviation for process equation
 #' @param seed <int> set.seed for reproducibility
 #' @param catch <vector> observed catches, defines number of years, so if you have a period of no catches set values of 0, number of years = length(catches+ 1)
-
+#' @export
 surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed = 123) {
   set.seed(seed);
   N = length(catch) + 1
@@ -280,7 +281,8 @@ surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed 
 #' @param k <real> carrying capacity parameter.
 #' @param catches <vector> observed catches, defines number of years, so if you have a period of no catches set values of 0, number of years = length(catches+ 1)
 #' @param catchability <vector> a scalar to generate the relative index observation
-#' 
+#' @return a list of OM outputs
+#' @export
 surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catchability) {
   ## do some checks up front
   if (length(catchability) == 1) {
@@ -318,9 +320,8 @@ surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catc
 #' @param x0 <real> initial state
 #' @param K <real> carrying capacity parameter.
 #' @param theta 
-
 #' @return list of simulated data and derived quantities.
-
+#' @export
 theta_logistic = function(N_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;
@@ -331,9 +332,9 @@ theta_logistic = function(N_t, sig_obs, sig_pro, r, K, theta, x0) {
   return(list(state = state, obs = obs))
 }
 
-#' @title theta_logistic
+#' @title theta_logistic_q
 #' @description log-transformed theta logistic population growth model
-#' (Wang, 2007)
+#' (Wang, 2007), with a catchability on index
 #' @param N_t number of time steps
 #' @param sig_obs = standard deviation to draw observations
 #' @param sig_pro = standard deviation of process error
@@ -342,8 +343,8 @@ theta_logistic = function(N_t, sig_obs, sig_pro, r, K, theta, x0) {
 #' @param K <real> carrying capacity parameter.
 #' @param q <real> Catchability coeffecient
 #' @param theta 
-
 #' @return list of simulated data and derived quantities.
+#' @export
 theta_logistic_q = function(q, N_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;

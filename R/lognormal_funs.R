@@ -1,4 +1,5 @@
-#' r_lnorm Generates iid lognormal draws with expectation (note not the same as the mu parameter) and sigma in the same manner as CASAL
+#' r_lnorm Generates 
+#' @description iid lognormal draws with expectation (note not the same as the mu parameter) and sigma in the same manner as CASAL
 #' @param N <int>: number of draws
 #' @param expectation <double>: The expectation of the distribution, this is not the mu parameter because for the lognormal distribution the expectation is not the expectation parameter.
 #' @param cv <double>: The coefficent of variation of the distribution
@@ -31,8 +32,8 @@ log_cv = function(sigma) {
   return(cv)
 }
 
-#' log_sigma Calculate the sigma of the lognormal distribution based on \deqn{\sigma = \sqrt{log(cv^2 + 1)}}
-#'
+#' log_sigma 
+#' @description Calculate the sigma of the lognormal distribution based on \deqn{\sigma = \sqrt{log(cv^2 + 1)}}
 #' @param cv The CV (note this is in proportion not percentage) of the lognormal distribution
 #' @return The the sigma
 #' @export
@@ -42,8 +43,8 @@ log_sigma = function(cv) {
   return(sigma)
 }
 
-#' lognormal_CI Calculate upper and lower bounds for the lognormal distribution based with expectation and cv
-#' 
+#' lognormal_CI 
+#' @description Calculate upper and lower bounds for the lognormal distribution based with expectation and cv
 #' @param cv The standard deviation of the lognormal distribution
 #' @param expectation The expectation of the distribution, this is not the mu parameter because for the lognormal distribution the expectation is not the mu parameter.
 #' @param CI level of confidence (units are proportions not percentage i.e. 0.95 for 95 CI)
@@ -58,7 +59,8 @@ lognormal_CI <- function(expectation, cv ,CI = 0.95) {
   return(list("upper" = U_CI, "lower" = L_CI))
 }
 
-#' lnorm_prior calculate the log-likelihood contribution for the log-normal prior in CASAL
+#' lnorm_prior 
+#' @description calculate the log-likelihood contribution for the log-normal prior in CASAL
 #' @param X <double>: value/'s to calculate the prior for
 #' @param expectation <double>: The expectation of the distribution, this is not the mu parameter because for the lognormal distribution the expectation is not the expectation parameter.
 #' @param sigma <double>: The standard deviation of the distribution (in log space)

@@ -1,5 +1,5 @@
-#' plot_comp_resids A function that generates a plot of residuals for compositional data.
-#'
+#' plot_comp_resids 
+#' @description A function that generates a plot of residuals for compositional data.
 #' @author C.Marsh
 #' @param resids_matrix a matrix[years,bins] that are standardised residuals from compositional data, rownames(resids_matrix) = years (y-axis), colnames(resids_matrix) = ages/length
 #' @return a ggplot bubble plot

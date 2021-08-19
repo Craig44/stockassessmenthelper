@@ -26,11 +26,31 @@ library(ggplot2, warn.conflicts = F)
 ### Introduction
 to see these vignettes type in `browseVignettes("stockassessmenthelper")` or `vignette("ExampleUseage")` or compile it yourself with knitr. Also hopefully all functions are documented so to query the inputs to a function use the `?` i.e. `?sim_pars`
 
+## Selectivities
+```{r selectivities, fig.width=8, fig.height=6}
+ages = 1:40
+# logistic
+sel_data_frame = data.frame(ages = ages, constant = constant_sel(0.8, ages), 
+           "knife edge" = knife_sel(6, ages), 
+           logistic = logis_sel(ages, 6, 5), 
+           "inverse logistic" = inv_logis_sel(ages, 6, 5), 
+           "double normal" = d_norm_sel(ages, 6, 2, 15), 
+           "double exponential" = d_exp_sel(bins = ages, x_1 = 1, x_2 = 30, x_0 = 6, y_1 = 0.25, y_2 = 0.15, y_0 = 0.09))
+sel_lng = melt(sel_data_frame, id.vars = "ages")
+ggplot(sel_lng, aes(x = ages, y = value, group = variable, col = variable)) +
+  geom_line(size = 2) +
+  facet_wrap(~variable)
+
+```
+
+
+## Surplus Production models
+
 
 ## Growth
 visualising growth functions and distributions of mean length at age. There are two growth functions available Von Bertalanffy `vonbert` and the generalised schnute growth function `schnute`.
 
-```{r plot_Growth, fig.width=6, fig.height=5}
+```{r plot_Growth, fig.width=5, fig.height=4}
 col_legend = c("obs" = "#999999", "true" = "#E69F00",  "estimated" = "#56B4E9")
 L_inf = 53
 k = 0.17
@@ -40,22 +60,28 @@ cv2 = 0.15
 ages = 1:40
 length_at_age = vonbert(ages, K = k, L_inf = L_inf, t0 = t0)
 # cvs are by length
-all_cvs = cv_by_length(cv1, cv2, length_at_age)
+cvs_length = cv_by_length(cv1, cv2, length_at_age)
+cvs_by_age = stretch(cv1, cv2, min(ages), max(ages))
 growth_plot = ggplot(data = data.frame(age = ages, length = length_at_age), aes(x = age, y = length)) +
          geom_line(aes( col = "true"), size = 2) +
   scale_color_manual(values = col_legend)
 growth_plot
 ```
 
+```{r cv_for_growth, fig.width=5, fig.height=4}
+## view the cv's
+plot(ages, cvs_length, ylab = "CV for mean length at age", xlab = "Age", type = "o", lwd = 3, ylim = c(0.05, 0.2))
+lines(ages, cvs_by_age, lwd = 3, lty = 2, col = "red")
+legend('bottomright', col = c("black","red"), lwd = 3, legend = c("By length", "By Age"))
+```
 
 randomly generate synthetic data
 
-
-```{r generate_growth_data, fig.width=6, fig.height=5}
+```{r generate_growth_data, fig.width=5, fig.height=4}
 n_samples_per_age = 5
 age_length_data = NULL
 for(a in 1:length(ages)) {
-  lengths = r_lnorm(n_samples_per_age, length_at_age[a], cv = all_cvs[a])
+  lengths = r_lnorm(n_samples_per_age, length_at_age[a], cv = cvs_length[a])
   age_length_data = rbind(age_length_data, data.frame(age = a, length = lengths))
 }
 growth_plot_w_obs = growth_plot +
@@ -63,9 +89,10 @@ growth_plot_w_obs = growth_plot +
 growth_plot_w_obs
 ```
 
-```{r est_Growth, fig.width=6, fig.height=5}
+```{r est_Growth, fig.width=5, fig.height=4}
 library(FSA) # a useful function for estimating growth
 vbT <- vbFuns("typical")  ## set growth model type
+# ?vbFuns for more growth curves. Not sure what error distribution this assumes?
 start_ <- vbStarts(length~age,data = age_length_data,type="typical")  # start values
 fit_ <- nls(length ~ vbT(age,Linf,K,t0),data = age_length_data, start = start_) # optimisation
 pars_ = fit_$m$getPars() # get pars
@@ -79,9 +106,9 @@ growth_plot_w_obs +
 Another plot of length at age
 
 
-```{r alt_growth_plot, fig.width=6, fig.height=5, eval=FALSE}
+```{r alt_growth_plot, fig.width=5, fig.height=4, eval=FALSE}
 ## concentrate on 3 ages for clarity
-std_devs = log_sigma(all_cvs)
+std_devs = log_sigma(cvs_length)
 draws = 2000
 ages_ndx = c(11:13)
 these_ages = ages[ages_ndx]
@@ -156,7 +183,7 @@ this function will create a file called `sim_pars` in the `csl_path`, which can 
 
 
 ### Pulling out states from a CASAL run
-
+The following functions will pull out numbers at age from a CASAL model.
 `extract.step.AFs` and `extract.state` 
 
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract.csl.file.R
 \name{extract.csl.file}
 \alias{extract.csl.file}
-\title{extract.csl.file an alternative to casal::extract.csl.file() which I had issues with.}
+\title{extract.csl.file}
 \usage{
 extract.csl.file(file, path = "")
 }
@@ -15,5 +15,5 @@ extract.csl.file(file, path = "")
 list of casal config files.
 }
 \description{
-extract.csl.file an alternative to casal::extract.csl.file() which I had issues with.
+an alternative to casal::extract.csl.file() which I had issues with.
 }

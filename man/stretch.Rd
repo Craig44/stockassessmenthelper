@@ -2,7 +2,7 @@
 % Please edit documentation in R/growth_params.R
 \name{stretch}
 \alias{stretch}
-\title{stretch does a CV linear interpolation by age used in CASAL to define cv by age}
+\title{stretch}
 \usage{
 stretch(cv1, cv2, min_age, max_age)
 }
@@ -19,5 +19,5 @@ stretch(cv1, cv2, min_age, max_age)
 vector of cvs from min_age to max_age
 }
 \description{
-stretch does a CV linear interpolation by age used in CASAL to define cv by age
+does a CV linear interpolation by age used in CASAL to define cv by age
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lognormal_funs.R
 \name{lnorm_prior}
 \alias{lnorm_prior}
-\title{lnorm_prior calculate the log-likelihood contribution for the log-normal prior in CASAL}
+\title{lnorm_prior}
 \usage{
 lnorm_prior(X, expectation, sigma, negative = TRUE)
 }
@@ -16,5 +16,5 @@ lnorm_prior(X, expectation, sigma, negative = TRUE)
 \item{negative}{<bool>: Return the negative log-likelihod if True else if FALSE return just the log-likelihood}
 }
 \description{
-lnorm_prior calculate the log-likelihood contribution for the log-normal prior in CASAL
+calculate the log-likelihood contribution for the log-normal prior in CASAL
 }

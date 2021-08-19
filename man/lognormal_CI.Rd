@@ -2,7 +2,7 @@
 % Please edit documentation in R/lognormal_funs.R
 \name{lognormal_CI}
 \alias{lognormal_CI}
-\title{lognormal_CI Calculate upper and lower bounds for the lognormal distribution based with expectation and cv}
+\title{lognormal_CI}
 \usage{
 lognormal_CI(expectation, cv, CI = 0.95)
 }
@@ -17,5 +17,5 @@ lognormal_CI(expectation, cv, CI = 0.95)
 a list with upper and lower elements
 }
 \description{
-lognormal_CI Calculate upper and lower bounds for the lognormal distribution based with expectation and cv
+Calculate upper and lower bounds for the lognormal distribution based with expectation and cv
 }

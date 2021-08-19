@@ -1,4 +1,5 @@
 #' run_reweight
+#' @description A function for automatically runnning compositional reweighting code. It will overwrite the estimation.csl file so please read the details before running the function
 #' @details before running this code you will need to save the original estimation.csl as this function will overwrite the est_csl_file file.
 #' Applies the Method.TA1.8 method in francis
 #' 

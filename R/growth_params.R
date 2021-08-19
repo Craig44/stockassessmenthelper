@@ -39,7 +39,8 @@ schnute <- function(y1,y2,t1,t2,a,b,age){
   }
 }
 
-#' basic Length weight relationship, allometric relationship
+#' basic 
+#' @description allometric Length weight relationship
 #' @param len length 
 #' @param a multiplier
 #' @param b exponent
@@ -48,7 +49,8 @@ basic<- function(a,b,len) {
   a*len^b
 }
 
-#' stretch does a CV linear interpolation by age used in CASAL to define cv by age
+#' stretch 
+#' @description does a CV linear interpolation by age used in CASAL to define cv by age
 #' @param cv1 is the cv for min_age
 #' @param cv2 is the cv for max_age
 #' @param min_age min age to calculate cvs for
@@ -63,7 +65,8 @@ stretch <- function(cv1, cv2, min_age, max_age) {
   return(return_vec)
 }
 
-#' cv_by_length  does a length based interpolation of cv for the growth function. This is also done in CASAL when by_length = T.
+#' cv_by_length  
+#' @description does a length based interpolation of cv for the growth function. This is also done in CASAL when by_length = T.
 #' @param cv1 cv for first mean length
 #' @param cv2 cv for last mean length
 #' @param mean_length_at_age mean length at age from a growth function or empirical

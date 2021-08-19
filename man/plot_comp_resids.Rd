@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_comp_resids.R
 \name{plot_comp_resids}
 \alias{plot_comp_resids}
-\title{plot_comp_resids A function that generates a plot of residuals for compositional data.}
+\title{plot_comp_resids}
 \usage{
 plot_comp_resids(resids_matrix, show_legend = TRUE)
 }
@@ -13,7 +13,7 @@ plot_comp_resids(resids_matrix, show_legend = TRUE)
 a ggplot bubble plot
 }
 \description{
-plot_comp_resids A function that generates a plot of residuals for compositional data.
+A function that generates a plot of residuals for compositional data.
 }
 \author{
 C.Marsh

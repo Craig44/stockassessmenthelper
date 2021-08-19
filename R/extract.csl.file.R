@@ -1,4 +1,5 @@
-#' extract.csl.file an alternative to casal::extract.csl.file() which I had issues with.
+#' extract.csl.file 
+#' @description an alternative to casal::extract.csl.file() which I had issues with.
 #' @export
 #' @param path path to the filename 
 #' @param file casal output filename

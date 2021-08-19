@@ -2,7 +2,7 @@
 % Please edit documentation in R/growth_params.R
 \name{cv_by_length}
 \alias{cv_by_length}
-\title{cv_by_length  does a length based interpolation of cv for the growth function. This is also done in CASAL when by_length = T.}
+\title{cv_by_length}
 \usage{
 cv_by_length(cv1, cv2, mean_length_at_age)
 }
@@ -17,5 +17,5 @@ cv_by_length(cv1, cv2, mean_length_at_age)
 vector of cvs for each mean length
 }
 \description{
-cv_by_length  does a length based interpolation of cv for the growth function. This is also done in CASAL when by_length = T.
+does a length based interpolation of cv for the growth function. This is also done in CASAL when by_length = T.
 }

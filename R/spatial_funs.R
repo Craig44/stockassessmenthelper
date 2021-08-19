@@ -2,8 +2,10 @@
 #' @description convert from degrees degrees:minutes:seconds -> decimal degrees
 #' @param x <scalar> format degrees:minutes:seconds
 #' @return dec_degrees
-#' @example
+#' @examples
+#' \dontrun{
 #' deg2decdeg(paste(-43,50,23,sep = ":"))
+#' }
 #' @export
 deg2decdeg = function(x) {
   sp_x = strsplit(x, split = ":")
@@ -17,8 +19,10 @@ deg2decdeg_v = Vectorize(FUN = deg2decdeg)
 #' @description convert from  decimal degrees -> degrees degrees:minutes:seconds
 #' @param x <scalar> format decimal degrees
 #' @return degrees:minutes:seconds
-#' @example
+#' @examples
+#' \dontrun{
 #' deg2decdeg(paste(-43,50,23,sep = ":"))
+#' }
 #' @export
 decdeg2deg <- function(x) {
   x1 = abs(x)

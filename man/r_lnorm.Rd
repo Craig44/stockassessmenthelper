@@ -2,7 +2,7 @@
 % Please edit documentation in R/lognormal_funs.R
 \name{r_lnorm}
 \alias{r_lnorm}
-\title{r_lnorm Generates iid lognormal draws with expectation (note not the same as the mu parameter) and sigma in the same manner as CASAL}
+\title{r_lnorm Generates}
 \usage{
 r_lnorm(N, expectation, cv = NULL, sigma = NULL)
 }
@@ -16,5 +16,5 @@ r_lnorm(N, expectation, cv = NULL, sigma = NULL)
 \item{sigma}{<double>: The standard deviation of the distribution (in log space)}
 }
 \description{
-r_lnorm Generates iid lognormal draws with expectation (note not the same as the mu parameter) and sigma in the same manner as CASAL
+iid lognormal draws with expectation (note not the same as the mu parameter) and sigma in the same manner as CASAL
 }

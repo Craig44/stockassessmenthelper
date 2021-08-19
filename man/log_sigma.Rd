@@ -2,7 +2,7 @@
 % Please edit documentation in R/lognormal_funs.R
 \name{log_sigma}
 \alias{log_sigma}
-\title{log_sigma Calculate the sigma of the lognormal distribution based on \deqn{\sigma = \sqrt{log(cv^2 + 1)}}}
+\title{log_sigma}
 \usage{
 log_sigma(cv)
 }
@@ -13,5 +13,5 @@ log_sigma(cv)
 The the sigma
 }
 \description{
-log_sigma Calculate the sigma of the lognormal distribution based on \deqn{\sigma = \sqrt{log(cv^2 + 1)}}
+Calculate the sigma of the lognormal distribution based on \deqn{\sigma = \sqrt{log(cv^2 + 1)}}
 }
