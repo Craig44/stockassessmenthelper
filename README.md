@@ -6,3 +6,5 @@ You can install it via
 ```r
 devtools::install_github("Craig44/stockassessmenthelper")
 ```
+
+Once the library is installed you can query the functionality `library(help="stockassessmenthelper")` also see the vignette with the command `browseVignettes("stockassessmenthelper")`
