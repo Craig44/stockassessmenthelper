@@ -4,7 +4,7 @@ There is also a few functions for interrogating CASAL models.
 
 ## Installation
 ```r
-devtools::install_github("Craig44/stockassessmenthelper")
+devtools::install_github("Craig44/stockassessmenthelper", build_vignettes  = TRUE)
 ```
 An issue you might find when installing this, is it has dependencies with R packages that are not on CRAN i.e. `library(casal)`. To get these package either email casal2@niwa.co.nz, or you can download it from here [here](https://casal2.github.io/casal/).
 
