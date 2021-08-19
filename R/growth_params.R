@@ -39,6 +39,15 @@ schnute <- function(y1,y2,t1,t2,a,b,age){
   }
 }
 
+#' basic Length weight relationship, allometric relationship
+#' @param len length 
+#' @param a multiplier
+#' @param b exponent
+#' @export
+basic<- function(a,b,len) {
+  a*len^b
+}
+
 #' stretch does a CV linear interpolation by age used in CASAL to define cv by age
 #' @param cv1 is the cv for min_age
 #' @param cv2 is the cv for max_age

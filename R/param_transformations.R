@@ -102,3 +102,25 @@ draw_from_radius = function(n = 10, lower_bound = -Inf, upper_bound = Inf, minus
   return(x_vals);
 }
 
+#' alr 
+#' @description transformation
+#' sum(x) = 1 & length(x) = n -> y length(y) = n - 1
+#' The last value is made to be the 'reference' element 
+#' @param x vector of compositions doesn't actually have to sum = 1
+#' @return additive log ratio transformed variable
+#' @export
+alr = function(x) {
+  y = log(x[-length(x)] / x[length(x)])
+  return(y)
+}
+#' alrinv
+#' @description ALN transformation inverse
+#' sum(x) = 1 & length(x) = n -> y length(y) = n - 1
+#' @param y vector of compositions that have been alr
+#' @return additive log ratio transformed variable
+#' @export
+alrinv = function(y) {
+  x = c(exp(y), 1)
+  x1 = x / sum(x)
+  return(x1)
+}
