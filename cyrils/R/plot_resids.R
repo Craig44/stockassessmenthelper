@@ -12,6 +12,7 @@ plot_comp_resids = function(resids_matrix, show_legend = TRUE) {
   df_melted$outliers = ifelse(abs(df_melted$value) >= 2, "Outliers (>2)", ifelse(df_melted$value <= 0,"Negative", "Positive"));
   df_melted$sign = ifelse(df_melted$value <= 0, "Negative", "Positive")
   df_melted$plotted_var = df_melted$value
+  ## truncate for plotting
   df_melted$plotted_var[df_melted$plotted_var < -2] = -2
   df_melted$plotted_var[df_melted$plotted_var > 2] = 2
   
