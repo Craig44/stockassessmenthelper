@@ -1,0 +1,21 @@
+Package: stockassessmenthelper
+Type: Package
+Title: Package to help plot stock assessment models and functionality
+Version: 1.0
+Date: 2021-08-13
+Author: C Marsh
+Maintainer: Craig Marsh <craig.marsh10@gmail.com>
+Description: Auxillary functions for stock assessment scientists. Run 'browseVignettes("stockassessmenthelper")' for a vignette on example usage
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.7),
+    dplyr,
+    ggplot2,
+    reshape2,
+    casal,
+    DataWeighting
+LinkingTo: Rcpp
+RoxygenNote: 7.1.1
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
