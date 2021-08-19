@@ -146,7 +146,7 @@ Assuming you have done a casal profile `casal -p` run the function `plot_CASAL_p
 
 ```{r profile_comps}
 # see what objective function components can be visualised?
-data_path = system.file("extdata", package = "casalauxillary")
+data_path = system.file("extdata", package = "stockassessmenthelper")
 possible_components = plot_CASAL_profile(file = "2021_profile_R0.casal", path = data_path, 
                  profiled_param = "initialization.R0", objective_function_components = "all", 
                  element = NULL, ask_for_obj_labels = T, likelihood_cut_off = 100, 
