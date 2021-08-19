@@ -47,7 +47,8 @@ run_reweight <- function(csl_path, est_csl_file, comp_obs, est_file, additional_
       if(length(est_out$fits[[ndx]]$year) < min_years) {
         next;
       }
-      weight= Method.TA1.8(fit = est_out$fits[[ndx]], plotit = F)
+      bin_labs = as.numeric(substring(colnames(est_out$fits[[ndx]]$obs), first = 2))
+      weight = Method.TA1.8(bin_lab = bin_labs, observed = t(est_out$fits[[ndx]]$obs), expected = t(est_out$fits[[ndx]]$fits), error_value = est_out$fits[[ndx]]$'error.value'[,1], plot.it = F)
       weights[i] = weight
       
       if(weight < 0.2) 
@@ -96,7 +97,7 @@ run_reweight <- function(csl_path, est_csl_file, comp_obs, est_file, additional_
 #' Canadian Journal of Fisheries and Aquatic Sciences 68: 1124-1138. (With corrections to the equation in Francis R.I.C.C. (2011) Corrigendum: Data weighting in statistical fisheries stock assessment models.
 #' @export
 
-Method.TA1.8 <- function (bin_lab, observed, expected, error_value, plot.it = FALSE) {
+Method.TA1.8 <- function(bin_lab, observed, expected, error_value, plot.it = FALSE) {
   ## rescale to sum = 1
   Obs <- sweep(observed, 2, colSums(observed), "/")
   Exp <- sweep(expected, 2, colSums(expected), "/")
