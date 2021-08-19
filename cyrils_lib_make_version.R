@@ -15,8 +15,11 @@ cat("Author: C. Marsh\n",file=filename,append=TRUE)
 cat("Description: A set of R functions for manipulating data and distributions\n",file=filename,append=TRUE)
 cat("Maintainer: contact Author <craig.marsh10@gmail.com>\n",file=filename,append=TRUE)
 cat("LazyData: true\n",file=filename,append=TRUE)
+cat("License: GPL-2  \n",file=filename,append=TRUE)
+cat("Depends:\n",file=filename,append=TRUE)
+cat("\tR (>= 2.15)\n",file=filename,append=TRUE)
 cat("Imports:\n",file=filename,append=TRUE)
-cat("\t ggplot2,\n\t reshape2\n",file=filename,append=TRUE)
+cat("\tggplot2,\n\treshape2,\n\tKernSmooth,\n\tutils,\n\tgraphics,\n\tstats",file=filename,append=TRUE)
 
 # Create R function to return R library version number
 filename<-"cyrils/R/Version.R"

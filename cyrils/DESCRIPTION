@@ -1,12 +1,20 @@
 Package: cyrils
 Title: A R package of useful functions
 Version: 1.0
-Date: 2019-04-02
+Date: 2020-04-01
+Encoding: UTF-8
 Author: C. Marsh
 Description: A set of R functions for manipulating data and distributions
 Maintainer: contact Author <craig.marsh10@gmail.com>
 LazyData: true
+License: GPL-2  
+Depends:
+	R (>= 2.15)
 Imports:
-	 ggplot2,
-	 reshape2
-RoxygenNote: 6.1.0
+	ggplot2,
+	reshape2,
+	KernSmooth,
+	utils,
+	graphics,
+	stats
+RoxygenNote: 6.1.1

@@ -1,5 +1,6 @@
-## Casal Ogives
-
+#' constant selectivity
+#' @param C values
+#' @return constant selectivty
 #' @export
 cons<- function(C)
 {
@@ -10,7 +11,7 @@ cons<- function(C)
   return(C)
 }
 
-## Knife Edge
+#' Knife Edge selectivity
 #' @export
 
 knife<- function(X,E)
@@ -25,15 +26,14 @@ knife<- function(X,E)
   return(store)
   }
 
-## Logistic
+#' Logistic selectivity
 #' @export
-
 logis<- function(X,a50,a95)
 {
  1/(1+19^((a50-X)/a95)) 
 }
 
-## Inverse Logisitic
+#' Inverse Logisitic selectivity
 #' @export
 
 inv_logis<- function(X,a50,a95)
@@ -41,7 +41,7 @@ inv_logis<- function(X,a50,a95)
   1- 1/(1+19^((a50-X)/a95)) 
 }
 
-## Exponential
+#' Exponential selectivity
 #' @export
 
 Exp<- function(X,lambda)
@@ -50,7 +50,7 @@ Exp<- function(X,lambda)
 }
 
 
-## Double normal
+#' Double normal selectivity
 #' @export
 
 d_norm<- function(X,mu, sig_l,sig_r)
@@ -66,7 +66,7 @@ d_norm<- function(X,mu, sig_l,sig_r)
 }
 
 
-## Double Exponential
+#' Double Exponential selectivity
 #' @export
 
 d_exp <- function(X,x_1,x_2,x_0,y_0,y_1,y_2)
