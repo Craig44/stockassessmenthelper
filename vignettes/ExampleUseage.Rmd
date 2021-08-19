@@ -1,0 +1,79 @@
+---
+title: "ExampleUseage"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ExampleUseage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+number_sections: false  
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning=FALSE, echo=T, results='hide'}
+library(casal, warn.conflicts = F)
+library(stockassessmenthelper, warn.conflicts = F)
+library(reshape2, warn.conflicts = F)
+library(dplyr, warn.conflicts = F)
+library(ggplot2, warn.conflicts = F)
+```
+
+### Introduction
+to see these vignettes type in `browseVignettes("stockassessmenthelper")` or `vignette("ExampleUseage")` or compile it yourself with knitr. Also hopefully all functions are documented so to query the inputs to a function use the `?` i.e. `?sim_pars`
+
+## CASAL helpers
+### Profiling Parameters
+Assuming you have done a casal profile `casal -p` run the function `plot_CASAL_profile` will create a ggplot showing the effects of each objective contribution.
+
+```{r profile_comps}
+# see what objective function components can be visualised?
+data_path = system.file("extdata", package = "casalauxillary")
+possible_components = plot_CASAL_profile(file = "2021_profile_R0.casal", path = data_path, 
+                 profiled_param = "initialization.R0", objective_function_components = "all", 
+                 element = NULL, ask_for_obj_labels = T, likelihood_cut_off = 100, 
+                 custom_xlim = c(0,2e7))
+possible_components
+```
+
+
+
+```{r profile_plot, fig.height = 7, fig.width = 4, fig.align = "center"}
+
+# create a plot for a subset of these.
+R0_profile = plot_CASAL_profile(file = "2021_profile_R0.casal", path = data_path, 
+                 profiled_param = "initialization.R0", 
+                 objective_function_components = c("BP_SPUE","REC_CPUE" ,"PS_AGE" ,"REC_AGE", "ST_AGE"), 
+                 element = NULL, ask_for_obj_labels = F, likelihood_cut_off = 100, 
+                 custom_xlim = c(0,2e7))
+```
+
+Another useful function for summarising a profiled run is the `extract.multiple.quantities`
+
+
+### Simulating different starting values (Jittering)
+To test the robustness of your assessment to the choice of starting values.
+
+```{r start_values}
+diff_start_vals = sim_pars(dash_o_file_name = "MPD_dash_o_file.out", csl_path = data_path,
+                 plus_minus_for_bounds = 0.1, n_pars = 10, index_of_pars_fixed = NULL)
+diff_start_vals[1:5,1:5]
+```
+
+this function will create a file called `sim_pars` in the `csl_path`, which can be used in the `-i` format for a CASAL model run.
+
+
+
+### Pulling out states from a CASAL run
+
+`extract.step.AFs` and `extract.state` 
+
+
+### ReWeighting
+An automated function for running Chris Francis's reweighting Method TA1.8 approach on a CASAL model. Please read the details on this function it will **overwrite** the csl file. So it is adviced to save a copy of the original before running this code. Look at the function `?run_reweight`
+
+
