@@ -4,6 +4,5 @@ There is also a few functions for interrogating CASAL models.
 
 You can install it via 
 ```r
-library(devtools)
-install_github("Displayr/flipPlots")
+devtools::install_github("Craig44/stockassessmenthelper")
 ```
