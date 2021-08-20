@@ -5,6 +5,12 @@
 #' @return a ggplot bubble plot
 #' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot geom_point scale_colour_manual scale_fill_manual scale_size_continuous theme
+#' @examples 
+#' \dontrun{
+#' mpd = extract.mpd(path = system.file("extdata",package = "stockassessmenthelper"), file = "estimate.log")
+#' colnames(mpd$fits$chatTANage$pearson.resids) = as.numeric(substring(colnames(mpd$fits$chatTANage$pearson.resids), first = 2))
+#' plt = plot_comp_resids(resids_matrix = as.matrix(mpd$fits$chatTANage$pearson.resids), show_legend  = T)
+#' }
 #' @export
 plot_comp_resids = function(resids_matrix, show_legend = TRUE) {
   df_melted = melt(resids_matrix)
