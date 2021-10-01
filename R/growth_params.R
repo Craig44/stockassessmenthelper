@@ -9,7 +9,20 @@ vonbert <- function(age,K,L_inf,t0) {
   return(L_inf * (1-exp(-K*(age -t0))))
 }
 
-
+#' basic_weight calculate weight for a given length based on allometric length weight relationship with bias correction
+#' @param a a parameter in growht function
+#' @param b exponent
+#' @param l length
+#' @param cv cv from the age-length distribution
+#' @export
+#' @return weight, units will depend on a and b
+basic_weight = function(a, b, l, cv) {
+  bias_correct = 1;
+  if(distribution %in% c("normal","lognormal")) {
+    bias_correct = (1.0 + cv * cv)^(b * (b - 1.0) / 2.0))
+  }
+  return((a*l^b)*bias_correct)
+}
 #' schnute 
 #' @description general age-length growth formula
 #' @export
