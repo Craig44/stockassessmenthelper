@@ -19,7 +19,7 @@ vonbert <- function(age,K,L_inf,t0) {
 basic_weight = function(a, b, l, cv) {
   bias_correct = 1;
   if(distribution %in% c("normal","lognormal")) {
-    bias_correct = (1.0 + cv * cv)^(b * (b - 1.0) / 2.0))
+    bias_correct = (1.0 + cv * cv)^(b * (b - 1.0) / 2.0)
   }
   return((a*l^b)*bias_correct)
 }
