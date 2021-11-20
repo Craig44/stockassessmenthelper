@@ -19,7 +19,17 @@
 #' }
 #' @export 
 #' @return the record data frame with new entries for the grooming rule
-#'
+#' @examples
+#'\dontrun{
+#'## example of plotting this output
+#'## plot records
+#'melt_total = melt(total_grooming_record, id.vars = "rule")
+#'melt_total$rule = factor(melt_total$rule, ordered = T, levels = total_grooming_record$rule)
+#'ggplot(melt_total %>% filter(variable %in%  c("catch")), aes(y = value /1000, x = rule, group = 1)) +
+#'  geom_line(size = 2, linetype = "dotted") +
+#'  geom_point(size = 4, aes(col = rule)) + 
+#'  theme(axis.text.x = element_blank())
+#'}
 record_grooming_rule = function(df, index, catch.col, record = NULL, rule, year.col = NULL, attribute = "catch", keep_NA = T) {
   use_year = F # record values by year
   first_record = F # first record

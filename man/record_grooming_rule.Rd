@@ -11,7 +11,8 @@ record_grooming_rule(
   record = NULL,
   rule,
   year.col = NULL,
-  attribute = "catch"
+  attribute = "catch",
+  keep_NA = T
 )
 }
 \arguments{
@@ -31,9 +32,13 @@ record_grooming_rule(
 \itemize{
   \item catch absoulte catch
   \item events number of events
-  \item relative_catch percent change in catch
-  \item relative_events percent change in events
+  \item relative_catch is the percent change in catch from applying the rule
+  \item relative_events is the percent change in number of events from applying the rule
+  \item cumulative_catch track the catch left in the data set after each grooming rule
+  \item cumulative_events track the events left in the data set after each grooming rule
 }}
+
+\item{keep_NA}{if index has NA's and this is true then they stay in the data}
 }
 \value{
 the record data frame with new entries for the grooming rule
@@ -43,4 +48,16 @@ record_grooming_rule
 }
 \details{
 a utility function to record the effect of grooming rules on data sets. It will note remove the index from the dataset.
+}
+\examples{
+\dontrun{
+## example of plotting this output
+## plot records
+melt_total = melt(total_grooming_record, id.vars = "rule")
+melt_total$rule = factor(melt_total$rule, ordered = T, levels = total_grooming_record$rule)
+ggplot(melt_total \%>\% filter(variable \%in\%  c("catch")), aes(y = value /1000, x = rule, group = 1)) +
+ geom_line(size = 2, linetype = "dotted") +
+ geom_point(size = 4, aes(col = rule)) + 
+ theme(axis.text.x = element_blank())
+}
 }

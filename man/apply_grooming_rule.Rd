@@ -4,12 +4,14 @@
 \alias{apply_grooming_rule}
 \title{apply_grooming_rule}
 \usage{
-apply_grooming_rule(df, index)
+apply_grooming_rule(df, index, keep_NA = TRUE)
 }
 \arguments{
 \item{df}{the df we are manipulating}
 
 \item{index}{a conditional index length(index) == nrow(df). TRUE means it stays, FALSE means it is being excluded from}
+
+\item{keep_NA}{if index has NA's and this is true then they stay in the data}
 }
 \value{
 a modified version of df with the FALSE values from 'index' removed
