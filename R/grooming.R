@@ -44,7 +44,7 @@ record_grooming_rule = function(df, index, catch.col, record = NULL, rule, year.
   if(!catch.col %in% colnames(df)) {
     stop(paste0("Could not find the catch.col colname ", catch.col, " in colnames of dataframe")) 
   }
-  if(sum(is.na(index)) > 1) {
+  if(sum(is.na(index)) >= 1) {
     cat(paste0("Found ", sum(is.na(index)), " NA's in your index "))
     if(keep_NA) {
       index[is.na(index)] = TRUE
@@ -164,7 +164,7 @@ apply_grooming_rule = function(df, index, keep_NA = TRUE) {
   ## business rules
   if(length(index) != nrow(df))
     stop(paste0("length of index must equal rows in dataframe"))
-  if(sum(is.na(index)) > 1) {
+  if(sum(is.na(index)) >= 1) {
     cat(paste0("Found ", sum(is.na(index)), " NA's in your index "))
     if(keep_NA) {
       index[is.na(index)] = TRUE
