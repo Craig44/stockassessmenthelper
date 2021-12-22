@@ -21,6 +21,7 @@ library(stockassessmenthelper, warn.conflicts = F)
 library(reshape2, warn.conflicts = F)
 library(dplyr, warn.conflicts = F)
 library(ggplot2, warn.conflicts = F)
+library(purrr, warn.conflicts = F)
 ```
 
 ### Introduction
@@ -89,7 +90,7 @@ growth_plot_w_obs = growth_plot +
 growth_plot_w_obs
 ```
 
-```{r est_Growth, fig.width=5, fig.height=4}
+```{r est_Growth, fig.width=5, fig.height=4, eval = F}
 library(FSA) # a useful function for estimating growth
 vbT <- vbFuns("typical")  ## set growth model type
 # ?vbFuns for more growth curves. Not sure what error distribution this assumes?
@@ -191,3 +192,50 @@ The following functions will pull out numbers at age from a CASAL model.
 An automated function for running Chris Francis's reweighting Method TA1.8 approach on a CASAL model. Please read the details on this function it will **overwrite** the csl file. So it is adviced to save a copy of the original before running this code. Look at the function `?run_reweight`
 
 
+## GGplot and DPlyr tips
+Some useful functions to standardise numbers to proportions by levels of another factor i.e. year.
+```{r dplyr, eval=T}
+df = data.frame(year = rep(c(2000, 2001), each = 30), X_val = rnorm(60, 34, 5))
+## select columns that start with 'X'
+sub_df = df %>% dplyr::select(starts_with("X"))
+## standardise
+temp_df = df %>%
+  group_by(year) %>%
+  mutate(stand_x_val = across(X_val, .fn = function(x){x/sum(x)}))
+## alternative
+temp_df_alt = df %>%
+  group_by(year) %>%
+  mutate(stand_x_val = across(X_val, .fn = list(~ ./sum(.))))
+## check totals sum = 1
+temp_df %>% group_by(year) %>% summarise(totals = sum(stand_x_val))
+temp_df_alt %>% group_by(year) %>% summarise(totals = sum(stand_x_val))
+```
+
+A useful function for plotting SSB quantiles.
+```{r quants, eval=T, fig.height = 5, fig.width = 5, fig.align = "center"}
+## Set quantile range
+p <- c(0.025, 0.5, 0.975)
+labs = c("low", "mid", "upp") ## set labels
+p_funs <- map(p, ~partial(quantile, probs = .x, na.rm = TRUE)) %>%
+  set_names(nm = labs)
+p_funs
+## get data set
+ssb_df = data.frame(year = rep(c(2000, 2001, 2002), each = 300), 
+                    SSB = c(rnorm(300, 2000, 200), rnorm(300, 2500, 200), rnorm(300, 1500, 200)))
+## run function over data set
+quantile_ssb_df = ssb_df %>% 
+  group_by(year) %>% 
+  summarize_at(vars(SSB), funs(!!!p_funs))
+## create ggplot
+quant_ssb_plot = ggplot(quantile_ssb_df, aes(x = year, linetype = "dashed")) + 
+  geom_ribbon(aes(ymax  = low, ymin = upp, alpha = 0.5), lwd=0) +
+  theme_bw() +
+  geom_line(aes(y = mid), size =2, col = "grey60") +
+  xlab("Years") +
+  ylab("SSB") +
+  ylim(0, 3000) +
+  guides(alpha = 'none', linetype = "none") +
+  ggtitle("95% Quantiles") +
+  scale_x_continuous(breaks=c(2000, 2001, 2002))
+quant_ssb_plot
+```
