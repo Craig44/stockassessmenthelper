@@ -1,2 +1,2 @@
 ## View html online
-To view the compiled html file go to [this webpage](http://htmlpreview.github.io/) and copy and paste the _URL_ for the github HTML file into that page and it will compile it.
+To view the compiled html file go to [this webpage](http://htmlpreview.github.io/) and copy and paste the URL i.e. _https://github.com/Craig44/stockassessmenthelper/blob/master/vignettes/ExampleUseage.html_ into that page and it will compile it.
