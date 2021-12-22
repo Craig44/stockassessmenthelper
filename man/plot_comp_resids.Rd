@@ -15,6 +15,13 @@ a ggplot bubble plot
 \description{
 A function that generates a plot of residuals for compositional data.
 }
+\examples{
+\dontrun{
+mpd = extract.mpd(path = system.file("extdata",package = "stockassessmenthelper"), file = "estimate.log")
+colnames(mpd$fits$chatTANage$pearson.resids) = as.numeric(substring(colnames(mpd$fits$chatTANage$pearson.resids), first = 2))
+plt = plot_comp_resids(resids_matrix = as.matrix(mpd$fits$chatTANage$pearson.resids), show_legend  = T)
+}
+}
 \author{
 C.Marsh
 }
