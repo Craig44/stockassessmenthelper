@@ -239,3 +239,43 @@ quant_ssb_plot = ggplot(quantile_ssb_df, aes(x = year, linetype = "dashed")) +
   scale_x_continuous(breaks=c(2000, 2001, 2002))
 quant_ssb_plot
 ```
+### Characterisation and Grooming code
+There are functions which help report the effect of grooming rules `record_grooming_rule` and `apply_grooming_rule` for consistent code. It is important to see how grooming rules effect catch, effort and spatial distribution.
+
+
+One diagnostic that I want to implement in future characterizations is to look at trends in nominal catch rates wihtin indiviudal discrete cells that have been fished for consecutive years. I think this will give an indication of serial depletion. We will want to look at trends in median catch rates, sample sizes, and variance in catch rates over time. Another exploratory analysis is number of cells fished in in a given year, this will give an indication of expansion or contraction in fishing which may indicate something. Below is some rough pseudo code.
+
+```{r pseudo_code}
+n = 150
+library(raster)
+library(sp)
+set.seed(123)
+df_year_1 = data.frame(long = rnorm(n, 140, 50), lat = rnorm(n, -43, 5), year = 2000, catchrate = rlnorm(n, log(1.2), 0.6))
+df_year_2 = data.frame(long = rnorm(n, 130, 50), lat = rnorm(n, -42, 5), year = 2001, catchrate = rlnorm(n, log(1.2), 0.6))
+df = rbind(df_year_1, df_year_2)
+## transform coordinates to equal area, equal distance projection
+## if operating over small domain, may not be important.
+unproj_args = " +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 +lon_wrap=180"
+unproj <- CRS(unproj_args) #default WGS84 projection
+coordinates(df) <- ~ long + lat
+proj4string(df) <- unproj
+## project to new coordinate system
+df_proj <- spTransform(df, CRS("+init=epsg:4238"))
+ylim = range(df_proj$lat)
+xlim = range(df_proj$long)
+raster_grid <- raster(resolution = 0.1, xmn = xlim[1], xmx = xlim[2], ymn = ylim[1], ymx = ylim[2], crs = CRS("+init=epsg:4238"))
+# overall statistics
+median_catch <- rasterize(df, raster_grid, field = df$catchrate, median)
+n_tows <- rasterize(df, raster_grid, field = df$catchrate, length)
+sd_catchrate <- rasterize(df, raster_grid, field = df$catchrate, sd)
+
+## do the above fo each year
+years = unique(df$year)
+for(t in 1:length(years)) {
+  this_year = df[df$year == years[t], ]
+  ## ..etc
+  this_year_median_catchrate <- rasterize(this_year, raster_grid, field = this_year$catchrate, median)
+}
+## then visualize.
+```
+

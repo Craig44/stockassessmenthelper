@@ -47,7 +47,7 @@ the record data frame with new entries for the grooming rule
 record_grooming_rule
 }
 \details{
-a utility function to record the effect of grooming rules on data sets. It will note remove the index from the dataset.
+a utility function to record the effect of grooming rules on data sets. It will note remove the index from the dataset. TODO: As well as recording the effect of a groomong rule on catch and number of records summarise spatail distribution.
 }
 \examples{
 \dontrun{
@@ -55,9 +55,13 @@ a utility function to record the effect of grooming rules on data sets. It will 
 ## plot records
 melt_total = melt(total_grooming_record, id.vars = "rule")
 melt_total$rule = factor(melt_total$rule, ordered = T, levels = total_grooming_record$rule)
-ggplot(melt_total \%>\% filter(variable \%in\%  c("catch")), aes(y = value /1000, x = rule, group = 1)) +
+ggplot(melt_total \%>\% filter(variable \%in\%  c("events", "catch")), aes(y = value /1000, x = rule, group = 1)) +
  geom_line(size = 2, linetype = "dotted") +
  geom_point(size = 4, aes(col = rule)) + 
- theme(axis.text.x = element_blank())
+ theme(axis.text.x = element_blank()) +
+ ylab("") +
+ ylim(0,1600) +
+ facet_wrap(~variable) +
+ xlab("")
 }
 }
