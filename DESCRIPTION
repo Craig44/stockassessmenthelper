@@ -11,7 +11,9 @@ Imports: Rcpp (>= 1.0.7),
     dplyr,
     ggplot2,
     reshape2,
-    MASS
+    MASS,
+    Matrix,
+    TMB
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Suggests: 
