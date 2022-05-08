@@ -10,7 +10,7 @@ This will simulate a catch and effort data set to illustrate the methods.
 set.seed(123)
 n_time_steps = 10
 samples_per_year = 1000
-true_stock_density = c(r_lnorm(N = n_time_steps / 2, 0.4, 0.5), r_lnorm(N = n_time_steps / 2, 0.6, 0.9))
+true_stock_density = c(rlnorm(N = n_time_steps / 2, 0.4, 0.5), r_lnorm(N = n_time_steps / 2, 0.6, 0.9))
 plot(1:n_time_steps, true_stock_density, xlab = "Time", ylab = "True stock density", type = "l", lwd = 3)
 ```
 
