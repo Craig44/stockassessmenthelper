@@ -13,7 +13,10 @@ Imports: Rcpp (>= 1.0.7),
     reshape2,
     MASS,
     Matrix,
-    TMB
+    TMB,
+    purrr,
+    grid,
+    gridExtra
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Suggests: 

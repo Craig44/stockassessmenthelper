@@ -1,2 +1,0 @@
-## View html online
-To view the compiled html online [click here](http://htmlpreview.github.io/?https://github.com/Craig44/stockassessmenthelper/blob/master/vignettes/ExampleUseage.html). In general, to view an html source file on line copy and paste the URL i.e. _https://github.com/Craig44/stockassessmenthelper/blob/master/vignettes/ExampleUseage.html_ into this website[this webpage](http://htmlpreview.github.io/)
