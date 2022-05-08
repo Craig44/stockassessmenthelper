@@ -8,7 +8,7 @@
 #' @importFrom Matrix Cholesky solve
 rmvnorm_prec <- function(mu, prec, n.sims, random_seed ) {
   set.seed( random_seed )
-  z = matrix(rnorm(length(mu) * n.sims), ncol=n.sims)
+  z = matrix(stats::rnorm(length(mu) * n.sims), ncol=n.sims)
   L = Cholesky(prec, super=TRUE)
   z = solve(L, z, system = "Lt") ## z = Lt^-1 %*% z
   z = solve(L, z, system = "Pt") ## z = Pt    %*% z

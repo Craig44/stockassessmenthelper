@@ -19,6 +19,8 @@ surplus_production_model_sigma(
 )
 }
 \arguments{
+\item{seed}{integer random number seed}
+
 \item{n_t}{<integer> number of time-steps to run the model}
 
 \item{B1}{<real> starting exploited biomass}

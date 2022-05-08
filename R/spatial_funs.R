@@ -33,6 +33,8 @@ decdeg2deg <- function(x) {
 }
 #' decdeg2deg_v
 #' @description vectorised function of decdeg2deg
+#' @param x <numeric vector> format decimal degrees
+#' @export
 decdeg2deg_v = Vectorize(FUN = decdeg2deg)
 
 #' long2UTM 
@@ -46,7 +48,7 @@ long2UTM <- function(long) {
 }
 
 #' LongLatToUTM 
-#' @description takes a data frame whith lat and long in decimal degree format. Then
+#' @description takes a data frame with lat and long in decimal degree format. Then
 #' returns a spatial dataframe that is in UTM format.
 #' @param df <data.frame> that has at least two columns labelled long lat
 #' @param zone <integer> zone for UTM.
@@ -58,8 +60,8 @@ LongLatToUTM <- function(df, zone = NULL){
     stop("LongLatToUTM() df, requires the columns 'lat' & 'long' to be present.")
   ## Args: df, data frame must have x and y columns. Should be from same UTM zone.
   ## Create a spatial dataframe
-  coordinates(df) <- ~ long + lat
-  proj4string(df) <- CRS("+proj=longlat +datum=WGS84")  
+  sp::coordinates(df) <- ~ long + lat
+  sp::proj4string(df) <- CRS("+proj=longlat +datum=WGS84")  
   
   ## Get zones for from a range of longitudes of data.
   ## Take the most represenative zone of the data.

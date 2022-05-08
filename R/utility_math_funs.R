@@ -16,14 +16,14 @@ geometric.mean <- function(x) {
 #' @param na.rm	 a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @return mean with na's ignored
 #' @export
-Mean = function(...,na.rm = T) {median(..., na.rm = na.rm)}
+Mean = function(...,na.rm = T) {mean(..., na.rm = na.rm)}
 
 #' overloading function to calculate median when you have na's in vector
 #' @param ... same parameters as median(...)
 #' @param na.rm	 a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @return median with na's ignored
 #' @export
-Median = function(...,na.rm = T) {median(..., na.rm = na.rm)}
+Median = function(...,na.rm = T) {stats::median(..., na.rm = na.rm)}
 
 #' overloading function to calculate sum when you have na's in vector
 #' @param ... same parameters as sum(...)
@@ -37,13 +37,14 @@ Sum = function(...,na.rm = T) {sum(..., na.rm = na.rm)}
 #' @param na.rm	 a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @return variance with na's ignored
 #' @export
-Var = function(...,na.rm = T) {var(..., na.rm = na.rm)}
+Var = function(...,na.rm = T) {stats::var(..., na.rm = na.rm)}
 #' overloading function to calculate standard deviation when you have na's in vector
 #' @param ... same parameters as sd(...)
 #' @param na.rm	 a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @return standard deviation with na's ignored
+#' @importFrom stats plogis qlogis rnorm
 #' @export
-Sd = function(...,na.rm = T) {sd(..., na.rm = na.rm)}
+Sd = function(...,na.rm = T) {stats::sd(..., na.rm = na.rm)}
 
 #' pow exponential function, helpful when debugging C++ functions
 #' @param x base value

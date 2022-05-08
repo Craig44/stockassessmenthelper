@@ -38,6 +38,8 @@ simulate_SPM(
 \item{proj_years}{int number of projection years}
 
 \item{proj_u}{vector<proj_years> (length 1 or proj_years)}
+
+\item{process_error}{<vector> CV's (for each year) for simulated observations}
 }
 \value{
 Returns a list of model quantiteis and observations that can be used as an operating model

@@ -6,7 +6,7 @@
 #'
 restoresimplex = function(yk) {
   K = length(yk) + 1
-  zk = plogis(yk + log(1/(K - 1:(K-1))))
+  zk = stats::plogis(yk + log(1/(K - 1:(K-1))))
   xk = vector()
   xk[1] = zk[1]
   for(k in 2:(K - 1)) {
@@ -36,7 +36,7 @@ simplex = function(xk, sum_to_one = TRUE) {
   for(k in 2:(K - 1)) {
     zk[k] = xk[k] / (1 - sum(xk[1:(k - 1)] ))
   }
-  yk = qlogis(zk) - log(1/(K - 1:(K-1)))
+  yk = stats::qlogis(zk) - log(1/(K - 1:(K-1)))
   return(yk)
 }
 #' jacobiansimplex
@@ -49,7 +49,7 @@ simplex = function(xk, sum_to_one = TRUE) {
 jacobiansimplex = function(yk) {
   xk = restoresimplex(yk)
   K = length(yk) + 1
-  zk = plogis(yk + log(1/(K - 1:(K-1))))
+  zk = stats::plogis(yk + log(1/(K - 1:(K-1))))
   jacobian = zk[1] * (1 - zk[1]);
   #cat(zk[1], " ", 0, " ", jacobian, "\n")
   for(k in 2:(K - 1)) {

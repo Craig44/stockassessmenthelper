@@ -19,7 +19,7 @@ theta_logistic_q(q, n_t, sig_obs, sig_pro, r, K, theta, x0)
 
 \item{K}{<real> carrying capacity parameter.}
 
-\item{theta}{}
+\item{theta}{theta parameter}
 
 \item{x0}{<real> initial state}
 }

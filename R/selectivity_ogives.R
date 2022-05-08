@@ -36,8 +36,8 @@ logis_sel<- function(bins, a50, ato95) {
 #' @param a50 bin which equates to selectivy being at 0.5
 #' @param ato95 bins between the selectivty 0.5 and 0.95
 #' @return selectivity for each age.
-inv_logis_sel<- function(X, a50, ato95) {
-  1 - 1/(1+19^((a50-X)/ato95)) 
+inv_logis_sel<- function(bins, a50, ato95) {
+  1 - 1/(1+19^((a50 - bins)/ato95)) 
 }
 
 #' exp_sel Exponential selectivity

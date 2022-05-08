@@ -22,7 +22,7 @@ ub_constrain = function(x, Ub) {
   return(Ub - exp(x))
 }
 #' lb_constrain convert y(Lb, Inf] -> x(-Inf, Inf)
-#' @param x value to transform
+#' @param y value to transform
 #' @param Lb Lower bound of value
 #' @return unconstrained value
 #' @export
@@ -84,8 +84,8 @@ lub_constrain = function(x, Lb, Ub) {
 
 #' @title draw_from_radius
 #' description Stan starts initial values by drawing random values within a radius (+/-2) around zero
-#' this script will have a fun funs, that will draw a range of paraemters from this, that you
-#' can feed into your model to run deterministically to identify problem paraemters when you 
+#' this script will have a fun, that will draw a range of parameters from this, that you
+#' can feed into your model to run deterministically to identify problem parameters when you 
 #' @param n number of starting values
 #' @param lower_bound Lower bound of parameter
 #' @param upper_bound Upper bound of parameter
@@ -95,7 +95,7 @@ lub_constrain = function(x, Lb, Ub) {
 #' @export
 draw_from_radius = function(n = 10, lower_bound = -Inf, upper_bound = Inf, minus_init_radius = -2, plus_init_radius = 2) {
   ## draw from radius - runif~[minus_init_radius, plus_init_radius]
-  y_vals = runif(n, minus_init_radius, plus_init_radius)
+  y_vals = stats::runif(n, minus_init_radius, plus_init_radius)
   ## transform to natural space.
   x_vals = sapply(y_vals, FUN = lub_constrain,  lower_bound, upper_bound)
   

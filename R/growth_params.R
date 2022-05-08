@@ -1,7 +1,7 @@
 #' vonbert applies the Von Bertalanffy age-length relationship
 #' @param age take an age look in globe scope for the rest of parameters
 #' @param L_inf asympototic length
-#' @param k growth rate parameter
+#' @param K growth rate parameter
 #' @param t0 age for length = 0
 #' @export
 #' @return mean length at age

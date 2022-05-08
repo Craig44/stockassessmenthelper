@@ -4,10 +4,19 @@
 \alias{surplus_production_model_re_parameterised}
 \title{surplus_production_model_re_parameterised}
 \usage{
-surplus_production_model_re_parameterised(log_jt, r, k, catches, catchability)
+surplus_production_model_re_parameterised(
+  log_jt,
+  n_t,
+  r,
+  k,
+  catches,
+  catchability
+)
 }
 \arguments{
 \item{log_jt}{<real> states specified as J_t = B_t / K}
+
+\item{n_t}{number of time steps}
 
 \item{r}{<real> intrinsic growth parameter.}
 
@@ -16,8 +25,6 @@ surplus_production_model_re_parameterised(log_jt, r, k, catches, catchability)
 \item{catches}{<vector> observed catches, defines number of years, so if you have a period of no catches set values of 0, number of years = length(catches+ 1)}
 
 \item{catchability}{<vector> a scalar to generate the relative index observation}
-
-\item{n_t}{number of time steps}
 }
 \value{
 a list of OM outputs

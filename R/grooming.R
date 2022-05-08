@@ -25,7 +25,8 @@
 #'## plot records
 #'melt_total = melt(total_grooming_record, id.vars = "rule")
 #'melt_total$rule = factor(melt_total$rule, ordered = T, levels = total_grooming_record$rule)
-#' ggplot(melt_total %>% filter(variable %in%  c("events", "catch")), aes(y = value /1000, x = rule, group = 1)) +
+#' ggplot(melt_total %>% filter(variable %in%  c("events", "catch")), 
+#'       aes(y = value /1000, x = rule, group = 1)) +
 #'  geom_line(size = 2, linetype = "dotted") +
 #'  geom_point(size = 4, aes(col = rule)) + 
 #'  theme(axis.text.x = element_blank()) +

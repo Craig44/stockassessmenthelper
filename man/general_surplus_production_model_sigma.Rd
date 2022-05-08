@@ -48,7 +48,7 @@ general_surplus_production_model_sigma(
 
 \item{process_std}{(optional) standard deviation for process deviations corrections}
 
-\item{n_obs_series}{}
+\item{n_obs_series}{number relative indicies}
 }
 \value{
 Returns a list of model quantities and observations

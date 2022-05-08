@@ -9,11 +9,11 @@ vonbert(age, K, L_inf, t0)
 \arguments{
 \item{age}{take an age look in globe scope for the rest of parameters}
 
+\item{K}{growth rate parameter}
+
 \item{L_inf}{asympototic length}
 
 \item{t0}{age for length = 0}
-
-\item{k}{growth rate parameter}
 }
 \value{
 mean length at age

@@ -5,10 +5,9 @@ Version: 1.0
 Date: 2021-08-13
 Author: C Marsh
 Maintainer: Craig Marsh <craig.marsh10@gmail.com>
-Description: Auxillary functions for stock assessment scientists. Run 'browseVignettes("stockassessmenthelper")' for a vignette on example usage
+Description: Auxillary functions for stock assessment scientists. Run 'browseVignettes("stockassessmenthelper")' for a vignette on example usage.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.7),
-    dplyr,
+Imports: dplyr,
     ggplot2,
     reshape2,
     MASS,
@@ -18,8 +17,8 @@ Imports: Rcpp (>= 1.0.7),
     grid,
     gridExtra,
     sp,
-    base
-LinkingTo: Rcpp
+    utils,
+    stats
 RoxygenNote: 7.1.1
 Suggests: 
     rmarkdown,

@@ -4,8 +4,8 @@
 \alias{draw_from_radius}
 \title{draw_from_radius
 description Stan starts initial values by drawing random values within a radius (+/-2) around zero
-this script will have a fun funs, that will draw a range of paraemters from this, that you
-can feed into your model to run deterministically to identify problem paraemters when you}
+this script will have a fun, that will draw a range of parameters from this, that you
+can feed into your model to run deterministically to identify problem parameters when you}
 \usage{
 draw_from_radius(
   n = 10,
@@ -32,6 +32,6 @@ start_values for model
 \description{
 draw_from_radius
 description Stan starts initial values by drawing random values within a radius (+/-2) around zero
-this script will have a fun funs, that will draw a range of paraemters from this, that you
-can feed into your model to run deterministically to identify problem paraemters when you
+this script will have a fun, that will draw a range of parameters from this, that you
+can feed into your model to run deterministically to identify problem parameters when you
 }

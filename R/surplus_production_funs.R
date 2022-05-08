@@ -7,6 +7,7 @@
 #' @param K <real> carrying capacity parameter.
 #' @param exploitation <vector> Exploitation, defines number of years (length = n_t - 1), so if you have a period of no catches set values of 0
 #' @param obs_cv <vector> CV's (for each year) for simulated observations
+#' @param process_error <vector> CV's (for each year) for simulated observations
 #' @param proc_std (optional) time specific time deviations (epsilon_t,p) for each time step
 #' @param catchability <vector> a scalar to generate the relative index observation
 #' @param proj_years int number of projection years
@@ -20,15 +21,15 @@ simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc
   if (length(catchability) == 1)
     catchability = rep(catchability, n_t)
   if (length(obs_cv) != n_t) 
-    stop(paste0("need the same number of cvs for observations years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
+    stop(paste0("need the same number of cvs for observations years (catches + 1), you supplied '", length(obs_cv), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
   if (length(catchability) != n_t)
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(catchability), "' catchabilities, but '", n_t,"' years values, please sort this out"))
   
   observations = actual_catch = predicted_biomass = vector();
   predicted_biomass[1] = K * theta
   Y_tot = n_t + proj_years
   if (is.null(process_error)) {
-    process_error = rnorm(Y_tot, 0, proc_std);
+    process_error = stats::rnorm(Y_tot, 0, proc_std);
   } else {
     if (length(process_error) != Y_tot)
       stop(paste0("process_error needs to be for all years including projection = ", Y_tot))
@@ -40,7 +41,7 @@ simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc
     predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0)))  * (1 - exploitation[y - 1])) * exp(process_error[y])
     actual_catch[y - 1] = (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0))) * exploitation[y - 1]
   }
-  observations = rnorm(n_t, predicted_biomass * catchability, predicted_biomass * catchability * obs_cv);
+  observations = stats::rnorm(n_t, predicted_biomass * catchability, predicted_biomass * catchability * obs_cv);
   # Projection period
   for (y in (n_t + 1):Y_tot) {
     predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0)))  * (1 - proj_u)) * exp(process_error[y])
@@ -57,13 +58,14 @@ simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc
 #' @param proj_years int number of projection years
 #' @param n_sims int number random draws 
 #' @param B_Y list 'mu' MLE derived quantity and 'sd'
+#' @param m Shape parameter for the surplus production function
 #' @export
 #' @importFrom MASS mvrnorm
 project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates = matrix(), proj_years,  m, n_sims, B_Y = list()) {
   ## do some checks up front
   if(!all(names(B_Y) %in% c("mu","sd")))
-    error("names of B_y needs a name 'mu' and 'sd'")
-  start_biomass = rnorm(n_sims, B_Y$mu, B_Y$sd);
+    stop("names of B_y needs a name 'mu' and 'sd'")
+  start_biomass = stats::rnorm(n_sims, B_Y$mu, B_Y$sd);
   sim_pars = mvrnorm(n_sims, fixed_effect_estimates, covariance_estimates)
   ## projection
   projected_biomass = matrix(NA, nrow = n_sims, ncol = proj_years + 1)
@@ -73,7 +75,7 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
     u_msy[i] = sim_pars["r",i] / (m - 1) * ( 1 - 1/m)
     projected_biomass[i, 1] = start_biomass[i]
     for (y in 2:(proj_years + 1)) {
-      predicted_biomass[i, y] = ((predicted_biomass[i, y - 1] + (sim_pars["r",i] / (m - 1.0)) * predicted_biomass[i, y - 1] * (1.0 - (predicted_biomass[i, y - 1] / sim_pars["K",i])^(m - 1.0)))  * (1 - u_msy[i])) * exp(rnorm(1, 0, sim_pars["pro_std",i]))
+      predicted_biomass[i, y] = ((predicted_biomass[i, y - 1] + (sim_pars["r",i] / (m - 1.0)) * predicted_biomass[i, y - 1] * (1.0 - (predicted_biomass[i, y - 1] / sim_pars["K",i])^(m - 1.0)))  * (1 - u_msy[i])) * exp(stats::rnorm(1, 0, sim_pars["pro_std",i]))
       projected_catches[i, y - 1] = (predicted_biomass[i, y - 1] + (sim_pars["r",i] / (m - 1.0)) * predicted_biomass[i, y - 1] * (1.0 - (predicted_biomass[i, y - 1] / sim_pars["K",i])^(m - 1.0))) * u_msy[i]
       
     }
@@ -95,6 +97,7 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
 #' @param process_std (optional) standard deviation for process deviations corrections
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
+#' @param seed integer random number seed
 #' @export
 surplus_production_model_sigma = function(seed = 123, n_t, B1, r, k, catches, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL) {
   set.seed(seed)
@@ -137,10 +140,10 @@ surplus_production_model_sigma = function(seed = 123, n_t, B1, r, k, catches, ob
   sigma = NULL;
   if (observation_likelihood == 1) {
     log_mu = (log(predicted_biomass * catchability) - 0.5 * (obs_std^2))
-    observations = exp(rnorm(n_t, log_mu, obs_std));
+    observations = exp(stats::rnorm(n_t, log_mu, obs_std));
     
   } else if (observation_likelihood == 2) {
-    observations = rnorm(n_t,predicted_biomass * catchability, obs_std);
+    observations = stats::rnorm(n_t,predicted_biomass * catchability, obs_std);
     
   }
   return(list(exploitation = exploitation, sd = obs_std, surplus_production = surplus_production, expected =  predicted_biomass * catchability, obs = observations, biomass = predicted_biomass, catches = catches))
@@ -163,7 +166,7 @@ surplus_production_model_sigma = function(seed = 123, n_t, B1, r, k, catches, ob
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
 #' @param seed seed for random number generator
-#' @param n_obs_series 
+#' @param n_obs_series number relative indicies
 #' @export
 
 general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, catches = NULL, exploitation = NULL, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL, n_obs_series = 1) {
@@ -199,11 +202,11 @@ general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, 
     for(y in 2:n_t) {
       surplus_production[y - 1] = (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0));
       if (F_method == "catch") {
-        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1])  * exp(process_error[y - 1] - 0.5 * process_std^2) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
+        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1])  * exp(process_error[y - 1] - 0.5 * process_std^2) #* (1 - O1$exploitation[y - 1])# * exp(stats::rnorm(1, -0.5*sd_process*sd_process, sd_process));
         actual_catch[y - 1] = catches[y - 1];
         actual_exploitation[y - 1] = catches[y - 1] / (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0))) 
       } else {
-        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  * (1 - exploitation[y - 1]))  * exp(process_error[y - 1] - 0.5 * process_std^2) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
+        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  * (1 - exploitation[y - 1]))  * exp(process_error[y - 1] - 0.5 * process_std^2) #* (1 - O1$exploitation[y - 1])# * exp(stats::rnorm(1, -0.5*sd_process*sd_process, sd_process));
         actual_catch[y - 1] = (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0))) * exploitation[y - 1]
       }
       if (predicted_biomass[y] <= 0) 
@@ -213,11 +216,11 @@ general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, 
     for(y in 2:n_t) {
       surplus_production[y - 1] = (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0));
       if (F_method == "catch") {
-        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1]) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
+        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1]) #* (1 - O1$exploitation[y - 1])# * exp(stats::rnorm(1, -0.5*sd_process*sd_process, sd_process));
         actual_catch[y - 1] = catches[y - 1];
         actual_exploitation[y - 1] = catches[y - 1] / (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0))) 
       } else {
-        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  * (1 - exploitation[y - 1])) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
+        predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  * (1 - exploitation[y - 1])) #* (1 - O1$exploitation[y - 1])# * exp(stats::rnorm(1, -0.5*sd_process*sd_process, sd_process));
         actual_catch[y - 1] = (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0))) * exploitation[y - 1]
       }
       if (predicted_biomass[y] <= 0) 
@@ -231,10 +234,10 @@ general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, 
   for(i in 1:n_obs_series) {
     if (observation_likelihood == 1) {
       log_mu = (log(predicted_biomass * catchability) - 0.5 * (obs_std^2))
-      observations[i,] = exp(rnorm(n_t, log_mu, obs_std));
+      observations[i,] = exp(stats::rnorm(n_t, log_mu, obs_std));
       
     } else if (observation_likelihood == 2) {
-      observations[i,] = rnorm(n_t, predicted_biomass * catchability, obs_std);
+      observations[i,] = stats::rnorm(n_t, predicted_biomass * catchability, obs_std);
       
     }
   }
@@ -248,7 +251,7 @@ general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, 
 #' when looking at different estimation models. A main idea here is changing the lognormal distribution to be more
 #' traditional no adjustments.
 #' @param r <real> intrinsic growth parameter.
-#' @param k <real> carrying capacity parameter.
+#' @param K <real> carrying capacity parameter.
 #' @param q <real> relative index catchability.
 #' @param P1 <real> initial state relative to K (1 = B_t = K)
 #' @param obs_std <real> lognormal standard deviation for relative index
@@ -266,10 +269,10 @@ surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed 
   
   for (t in 2:n_t) {
     Pmean[t] = log(max(P[t-1] + r*P[t-1]*(1-P[t-1]) - catch[t-1] /  K , 0.01));
-    P[t] = rlnorm(1, Pmean[t],pro_std);
+    P[t] = stats::rlnorm(1, Pmean[t],pro_std);
   }
   
-  obs = rlnorm(n_t, log(q*P*K),obs_std);
+  obs = stats::rlnorm(n_t, log(q*P*K),obs_std);
   
   return( list(P_state = P, P_mean = Pmean, obs = obs, state = P*K))
 }
@@ -288,14 +291,14 @@ surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed 
 #' @param catchability <vector> a scalar to generate the relative index observation
 #' @return a list of OM outputs
 #' @export
-surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catchability) {
+surplus_production_model_re_parameterised = function(log_jt, n_t, r, k, catches, catchability) {
   ## do some checks up front
   if (length(catchability) == 1) {
     catchability = rep(catchability, n_t)
   }
   
   if (length(catchability) != n_t) {
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(catchability), "' catchabilities, but '", n_t,"' years values, please sort this out"))
   }
   
   Bt = exp(log_jt) * k;
@@ -331,9 +334,9 @@ theta_logistic = function(n_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;
   for (i in 1:(n_t - 1)) {
-    state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + rnorm(1,0,sig_pro)
+    state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + stats::rnorm(1,0,sig_pro)
   }
-  obs = rnorm(n_t, state, sig_obs);
+  obs = stats::rnorm(n_t, state, sig_obs);
   return(list(state = state, obs = obs))
 }
 
@@ -347,15 +350,15 @@ theta_logistic = function(n_t, sig_obs, sig_pro, r, K, theta, x0) {
 #' @param x0 <real> initial state
 #' @param K <real> carrying capacity parameter.
 #' @param q <real> Catchability coeffecient
-#' @param theta 
+#' @param theta theta parameter
 #' @return list of simulated data and derived quantities.
 #' @export
 theta_logistic_q = function(q, n_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;
   for (i in 1:(n_t - 1)) {
-    state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + rnorm(1,0,sig_pro)
+    state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + stats::rnorm(1,0,sig_pro)
   }
-  obs = rnorm(n_t, state * q, sig_obs);
+  obs = stats::rnorm(n_t, state * q, sig_obs);
   return(list(state = state, obs = obs))
 }

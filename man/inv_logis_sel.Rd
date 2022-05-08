@@ -4,14 +4,14 @@
 \alias{inv_logis_sel}
 \title{inv_logis_sel Inverse Logisitic selectivity}
 \usage{
-inv_logis_sel(X, a50, ato95)
+inv_logis_sel(bins, a50, ato95)
 }
 \arguments{
+\item{bins}{could be age or length}
+
 \item{a50}{bin which equates to selectivy being at 0.5}
 
 \item{ato95}{bins between the selectivty 0.5 and 0.95}
-
-\item{bins}{could be age or length}
 }
 \value{
 selectivity for each age.

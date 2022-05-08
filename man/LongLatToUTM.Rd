@@ -15,6 +15,6 @@ LongLatToUTM(df, zone = NULL)
 SpatialDataFrame
 }
 \description{
-takes a data frame whith lat and long in decimal degree format. Then
+takes a data frame with lat and long in decimal degree format. Then
 returns a spatial dataframe that is in UTM format.
 }

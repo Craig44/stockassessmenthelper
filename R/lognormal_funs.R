@@ -18,7 +18,7 @@ r_lnorm = function(N, expectation,cv = NULL, sigma = NULL) {
     sigma = sqrt(log(cv*cv + 1.0));
   }
   log_mu = log(expectation) - (sigma * sigma) / 2.0;
-  X = rnorm(N,log_mu,sigma)
+  X = stats::rnorm(N,log_mu,sigma)
   return(exp(X))
 }
 
@@ -53,7 +53,7 @@ log_sigma = function(cv) {
 lognormal_CI <- function(expectation, cv ,CI = 0.95) {
   sigma = log_sigma(cv)
   mu = (log(expectation) - 0.5*(sigma^2))
-  zscore = abs(qnorm((1 - CI)/2))
+  zscore = abs(stats::qnorm((1 - CI)/2))
   U_CI = exp(mu + zscore * sigma)
   L_CI = exp(mu - zscore * sigma)  
   return(list("upper" = U_CI, "lower" = L_CI))

@@ -6,6 +6,9 @@
 \usage{
 decdeg2deg_v(x)
 }
+\arguments{
+\item{x}{<numeric vector> format decimal degrees}
+}
 \description{
 vectorised function of decdeg2deg
 }

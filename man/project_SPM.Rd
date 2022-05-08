@@ -20,6 +20,8 @@ project_SPM(
 
 \item{proj_years}{int number of projection years}
 
+\item{m}{Shape parameter for the surplus production function}
+
 \item{n_sims}{int number random draws}
 
 \item{B_Y}{list 'mu' MLE derived quantity and 'sd'}

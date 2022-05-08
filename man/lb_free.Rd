@@ -7,9 +7,9 @@
 lb_free(y, Lb)
 }
 \arguments{
-\item{Lb}{Lower bound of value}
+\item{y}{value to transform}
 
-\item{x}{value to transform}
+\item{Lb}{Lower bound of value}
 }
 \value{
 unconstrained value

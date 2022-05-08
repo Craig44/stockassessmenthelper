@@ -7,6 +7,8 @@
 surplus_production_millar(K, r, q, P1, obs_std, pro_std, catch, seed = 123)
 }
 \arguments{
+\item{K}{<real> carrying capacity parameter.}
+
 \item{r}{<real> intrinsic growth parameter.}
 
 \item{q}{<real> relative index catchability.}
@@ -20,8 +22,6 @@ surplus_production_millar(K, r, q, P1, obs_std, pro_std, catch, seed = 123)
 \item{catch}{<vector> observed catches, defines number of years, so if you have a period of no catches set values of 0, number of years = length(catches+ 1)}
 
 \item{seed}{<int> set.seed for reproducibility}
-
-\item{k}{<real> carrying capacity parameter.}
 }
 \description{
 Returns a list of model quantities and observations that can be used as an operating model
