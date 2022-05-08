@@ -1,13 +1,17 @@
 on:
   push:
      branches:
-       - main
-
-  
+       - master
+#  workflow_run:
+#    workflows: [R-CMD-check]
+#    types:
+#      - completed
 
 name: renderbook
 
 jobs:
+
+
   bookdown:
     name: Render-Book
     runs-on: macOS-latest
@@ -15,6 +19,8 @@ jobs:
       - uses: actions/checkout@v1
       - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
+      - name: Install stockassessmenthelper
+        run: Rscript -e "install.packages('remotes')" -e "remotes::install_github('Craig44/stockassessmenthelper', build_vignettes  = F,dependencies = T)"
       - name: Install rmarkdown
         run: Rscript -e 'install.packages(c("rmarkdown","bookdown"))'
       - name: Render Book
