@@ -16,4 +16,8 @@ B_{t+1} = f(B_t | \boldsymbol{\theta}) e^{\epsilon_{t,p} - 0.5\sigma^2_p}
   (\#eq:observationmodel)
 \end{equation}	
 	
-	
+```{r simulate_SPM}
+x = 12;
+```	
+
+

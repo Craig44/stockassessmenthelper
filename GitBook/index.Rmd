@@ -17,7 +17,7 @@ github-repo: https://github.com/Craig44/stockassessmenthelper
 
 
 ```{r install_packages}
-library(stockassessmenthelper)
+#library(stockassessmenthelper)
 ```
 
 
