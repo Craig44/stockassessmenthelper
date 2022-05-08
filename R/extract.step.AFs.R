@@ -28,14 +28,18 @@ extract.step.AFs = function (file, step = 1, path = "")  {
     temp <- file[2:(end_of_section - 1)]
     mat_header = casal.string.to.vector.of.words(temp[1])
     deal_with_tag = FALSE
+    deal_with_sex = FALSE
     if("tag" %in% mat_header)
       deal_with_tag = TRUE
+    if("sex" %in% mat_header)
+      deal_with_sex = TRUE
     row_labs = NULL
-    Mat = matrix(ncol = length(mat_header)-2 - ifelse(deal_with_tag, 1, 0), nrow = length(temp) - 1)
+    Mat = matrix(ncol = length(mat_header)-ifelse(deal_with_sex, 1, 0) - ifelse(deal_with_tag, 1, 0), nrow = length(temp) - 1)
     for(i in 2:(length(temp))) {
       this_vec = casal.string.to.vector.of.words(temp[i])
-      Mat[i - 1, ] = as.numeric(this_vec[ifelse(deal_with_tag, 4, 3):length(mat_header)])
-      row_labs = c(row_labs, paste0(this_vec[1], "_", this_vec[2], ifelse(deal_with_tag, paste0("_",this_vec[3]), "")))
+      start_col = sum(deal_with_tag + deal_with_sex) + 1
+      Mat[i - 1, ] = as.numeric(this_vec[start_col:length(mat_header)])
+      row_labs = c(row_labs, paste0(this_vec[1:(start_col - 1)], collapse = "_"))
     }
     rownames(Mat) = row_labs
     states[[year]] <- Mat
