@@ -1,0 +1,20 @@
+# Catch and Effort grooming code {#CatchEffort}
+This section shows functions and methods that I have employed for analysising and grooming catch and effort fishery data.
+
+## Creating an example catch and effort data set
+
+This will simulate a catch and effort data set to illustrate the methods.
+
+
+```{r simulate_data, fig.width=10, fig.height=2, fig.fullwidth=TRUE}
+set.seed(123)
+n_time_steps = 10
+samples_per_year = 1000
+true_stock_density = c(r_lnorm(N = n_time_steps / 2, 0.4, 0.5), r_lnorm(N = n_time_steps / 2, 0.6, 0.9))
+plot(1:n_time_steps, true_stock_density, xlab = "Time", ylab = "True stock density", type = "l", lwd = 3)
+```
+
+illustrate that right skewed data could be an artifact of right skewed effort, and when we condition on some levels or covariate subspace the error distribution may actually be symmetric.
+
+
+
