@@ -6,6 +6,7 @@
 \usage{
 surplus_production_model_sigma(
   seed = 123,
+  n_t,
   B1,
   r,
   k,
@@ -18,6 +19,8 @@ surplus_production_model_sigma(
 )
 }
 \arguments{
+\item{n_t}{<integer> number of time-steps to run the model}
+
 \item{B1}{<real> starting exploited biomass}
 
 \item{r}{<real> intrinsic growth parameter.}

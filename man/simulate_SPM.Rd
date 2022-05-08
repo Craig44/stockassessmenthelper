@@ -27,7 +27,7 @@ simulate_SPM(
 
 \item{K}{<real> carrying capacity parameter.}
 
-\item{exploitation}{<vector> Exploitation, defines number of years (length = Y - 1), so if you have a period of no catches set values of 0}
+\item{exploitation}{<vector> Exploitation, defines number of years (length = n_t - 1), so if you have a period of no catches set values of 0}
 
 \item{obs_cv}{<vector> CV's (for each year) for simulated observations}
 

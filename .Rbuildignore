@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 GitBook/_book/
+GitBook/
 ^\.github$
+buildPkg.R

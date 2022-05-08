@@ -34,6 +34,7 @@ get_tmb_fixed_effects <- function(obj) {
 #' @param obj An optimised list that has been build by MakeAdFun
 #' @param delta Gradient threshold for defining a converged model
 #' @importFrom TMB sdreport
+#' @importFrom stats optimHess 
 #' @export 
 check_tmb_convergence <- function(obj, delta = 0.001) {
   best_fixed_eff_pars = get_tmb_fixed_effects(obj)

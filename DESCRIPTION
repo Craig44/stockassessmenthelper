@@ -16,7 +16,9 @@ Imports: Rcpp (>= 1.0.7),
     TMB,
     purrr,
     grid,
-    gridExtra
+    gridExtra,
+    sp,
+    base
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Suggests: 

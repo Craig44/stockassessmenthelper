@@ -6,9 +6,12 @@
 \usage{
 geometric.mean(x)
 }
-\description{
-Utility functions for generic maths, mostly the same function but ignoring NA's
+\arguments{
+\item{x}{vecor of strictly positive values}
 }
-\author{
-Craig Marsh
+\value{
+geometric mean with na's ignored
+}
+\description{
+calculate geometric mean when you have na's in vector
 }

@@ -5,7 +5,7 @@
 #' @param r <real> intrinsic growth parameter.
 #' @param m <real> Shape parameter for the surplus production function
 #' @param K <real> carrying capacity parameter.
-#' @param exploitation <vector> Exploitation, defines number of years (length = Y - 1), so if you have a period of no catches set values of 0
+#' @param exploitation <vector> Exploitation, defines number of years (length = n_t - 1), so if you have a period of no catches set values of 0
 #' @param obs_cv <vector> CV's (for each year) for simulated observations
 #' @param proc_std (optional) time specific time deviations (epsilon_t,p) for each time step
 #' @param catchability <vector> a scalar to generate the relative index observation
@@ -14,19 +14,19 @@
 #' @export
 simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc_std, proj_years, proj_u, process_error = NULL) {
   ## do some checks up front
-  Y = length(exploitation) + 1; ## one less catch than year
+  n_t = length(exploitation) + 1; ## one less catch than year
   if (length(obs_cv) == 1) 
-    obs_cv = rep(obs_cv, Y)
+    obs_cv = rep(obs_cv, n_t)
   if (length(catchability) == 1)
-    catchability = rep(catchability, Y)
-  if (length(obs_cv) != Y) 
-    stop(paste0("need the same number of cvs for observations years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", Y,"' years values, please sort this out"))
-  if (length(catchability) != Y)
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", Y,"' years values, please sort this out"))
+    catchability = rep(catchability, n_t)
+  if (length(obs_cv) != n_t) 
+    stop(paste0("need the same number of cvs for observations years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
+  if (length(catchability) != n_t)
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
   
   observations = actual_catch = predicted_biomass = vector();
   predicted_biomass[1] = K * theta
-  Y_tot = Y + proj_years
+  Y_tot = n_t + proj_years
   if (is.null(process_error)) {
     process_error = rnorm(Y_tot, 0, proc_std);
   } else {
@@ -36,17 +36,17 @@ simulate_SPM = function(theta, r, m, K, exploitation, obs_cv, catchability, proc
   
   predicted_biomass[1] = predicted_biomass[1] * exp(process_error[1])
   
-  for (y in 2:Y) {
+  for (y in 2:n_t) {
     predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0)))  * (1 - exploitation[y - 1])) * exp(process_error[y])
     actual_catch[y - 1] = (predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0))) * exploitation[y - 1]
   }
-  observations = rnorm(Y, predicted_biomass * catchability, predicted_biomass * catchability * obs_cv);
+  observations = rnorm(n_t, predicted_biomass * catchability, predicted_biomass * catchability * obs_cv);
   # Projection period
-  for (y in (Y + 1):Y_tot) {
+  for (y in (n_t + 1):Y_tot) {
     predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / K)^(m - 1.0)))  * (1 - proj_u)) * exp(process_error[y])
   }
   
-  return(list(expected =  predicted_biomass[1:Y] * catchability, obs = observations, biomass = predicted_biomass, catches = actual_catch, process_error = process_error))
+  return(list(expected =  predicted_biomass[1:n_t] * catchability, obs = observations, biomass = predicted_biomass, catches = actual_catch, process_error = process_error))
 }
 
 #' @title project_SPM
@@ -85,6 +85,7 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
 #' @title surplus_production_model_sigma
 #' @description simulates a surplus production model can be used as an operating model, Different from the above uses a standard deviation for process error instead of CV
 #' @return Returns a list of model quantities and observations that can be used as an operating model
+#' @param n_t <integer> number of time-steps to run the model
 #' @param B1 <real> starting exploited biomass
 #' @param r <real> intrinsic growth parameter.
 #' @param k <real> carrying capacity parameter.
@@ -95,14 +96,14 @@ project_SPM = function(fixed_effect_estimates = vector(), covariance_estimates =
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
 #' @export
-surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL) {
+surplus_production_model_sigma = function(seed = 123, n_t, B1, r, k, catches, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL) {
   set.seed(seed)
   ## do some checks up front
   if (length(catchability) == 1) {
-    catchability = rep(catchability, Y)
+    catchability = rep(catchability, n_t)
   }
-  if (length(catchability) != Y) {
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", Y,"' years values, please sort this out"))
+  if (length(catchability) != n_t) {
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
   }
   
   predicted_biomass = vector();
@@ -112,7 +113,7 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
   surplus_production = vector();
   
   if (!is.null(process_error)) {
-    for (t in 1:(Y - 1)) {
+    for (t in 1:(n_t - 1)) {
       surplus_production[t] = r*(1 - predicted_biomass[t] / k)* predicted_biomass[t]
       predicted_biomass[t+1] = (predicted_biomass[t] + r*(1 - predicted_biomass[t] / k)* predicted_biomass[t] - catches[t]) * exp(process_error[t] - 0.5 * process_std^2)
       exploitation[t] = catches[t] / (predicted_biomass[t] + r * (1 - predicted_biomass[t] / k) * predicted_biomass[t])
@@ -122,7 +123,7 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
       }
     }
   } else {
-    for (t in 1:(Y - 1)) {
+    for (t in 1:(n_t - 1)) {
       surplus_production[t] = r*(1 - predicted_biomass[t] / k)* predicted_biomass[t]
       predicted_biomass[t+1] = predicted_biomass[t] + r * (1 - predicted_biomass[t] / k) * predicted_biomass[t] - catches[t]
       exploitation[t] = catches[t] / (predicted_biomass[t] + r * (1 - predicted_biomass[t] / k) * predicted_biomass[t])
@@ -136,10 +137,10 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
   sigma = NULL;
   if (observation_likelihood == 1) {
     log_mu = (log(predicted_biomass * catchability) - 0.5 * (obs_std^2))
-    observations = exp(rnorm(Y, log_mu, obs_std));
+    observations = exp(rnorm(n_t, log_mu, obs_std));
     
   } else if (observation_likelihood == 2) {
-    observations = rnorm(Y,predicted_biomass * catchability, obs_std);
+    observations = rnorm(n_t,predicted_biomass * catchability, obs_std);
     
   }
   return(list(exploitation = exploitation, sd = obs_std, surplus_production = surplus_production, expected =  predicted_biomass * catchability, obs = observations, biomass = predicted_biomass, catches = catches))
@@ -149,6 +150,7 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
 #' @description that can be used as an operating model
 #' Different from the above uses a standard deviation for process error instead of CV and also allow for fishing to be input as both catch and exploitation.
 #' @return Returns a list of model quantities and observations 
+#' @param n_t <integer> number of time-steps to run the model
 #' @param B1 <real> starting exploited biomass
 #' @param r <real> intrinsic growth parameter.
 #' @param k <real> carrying capacity parameter.
@@ -160,15 +162,17 @@ surplus_production_model_sigma = function(seed = 123,B1, r, k, catches, obs_std,
 #' @param process_std (optional) standard deviation for process deviations corrections
 #' @param observation_likelihood <int> likelihood type, 1 = lognormal, 2 = normal, 3 = ...
 #' @param catchability <vector> a scalar to generate the relative index observation
+#' @param seed seed for random number generator
+#' @param n_obs_series 
 #' @export
 
-general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catches = NULL, exploitation = NULL, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL, n_obs_series = 1) {
+general_surplus_production_model_sigma = function(seed = 123, n_t, B1, m, r, k, catches = NULL, exploitation = NULL, obs_std, catchability, observation_likelihood = 1,process_error = NULL, process_std = NULL, n_obs_series = 1) {
   F_method = NULL
   set.seed(seed)
   
   ## do some checks up front
   if (length(catchability) == 1) {
-    catchability = rep(catchability, Y)
+    catchability = rep(catchability, n_t)
   }
   
   if (is.null(exploitation) & is.null(catches))
@@ -180,19 +184,19 @@ general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catche
   } else {
     F_method = "exploitation"
   }
-  if (length(catchability) != Y) {
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", Y,"' years values, please sort this out"))
+  if (length(catchability) != n_t) {
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
   }
   
   predicted_biomass = vector();
-  observations = matrix(NA, ncol  =Y, nrow = n_obs_series);
+  observations = matrix(NA, ncol  =n_t, nrow = n_obs_series);
   actual_exploitation = vector();
   predicted_biomass[1] = B1
   surplus_production = vector();
   actual_catch = vector();
   
   if (!is.null(process_error)) {
-    for(y in 2:Y) {
+    for(y in 2:n_t) {
       surplus_production[y - 1] = (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0));
       if (F_method == "catch") {
         predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1])  * exp(process_error[y - 1] - 0.5 * process_std^2) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
@@ -206,7 +210,7 @@ general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catche
         stop(paste0("model generated biomass less than 0 in year ", t, ", sort out parameterisation value"))
     }
   } else {
-    for(y in 2:Y) {
+    for(y in 2:n_t) {
       surplus_production[y - 1] = (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0));
       if (F_method == "catch") {
         predicted_biomass[y] = ((predicted_biomass[y - 1] + (r / (m - 1.0)) * predicted_biomass[y - 1] * (1.0 - (predicted_biomass[y - 1] / k)^(m - 1.0)))  - catches[y - 1]) #* (1 - O1$exploitation[y - 1])# * exp(rnorm(1, -0.5*sd_process*sd_process, sd_process));
@@ -223,14 +227,14 @@ general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catche
   
   #exploitation = catches / predicted_biomass[-length(predicted_biomass)]
   sigma = NULL;
-  observations = matrix(NA, ncol  =Y, nrow = n_obs_series);
+  observations = matrix(NA, ncol  =n_t, nrow = n_obs_series);
   for(i in 1:n_obs_series) {
     if (observation_likelihood == 1) {
       log_mu = (log(predicted_biomass * catchability) - 0.5 * (obs_std^2))
-      observations[i,] = exp(rnorm(Y, log_mu, obs_std));
+      observations[i,] = exp(rnorm(n_t, log_mu, obs_std));
       
     } else if (observation_likelihood == 2) {
-      observations[i,] = rnorm(Y, predicted_biomass * catchability, obs_std);
+      observations[i,] = rnorm(n_t, predicted_biomass * catchability, obs_std);
       
     }
   }
@@ -254,18 +258,18 @@ general_surplus_production_model_sigma = function(seed = 123,B1, m, r, k, catche
 #' @export
 surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed = 123) {
   set.seed(seed);
-  N = length(catch) + 1
+  n_t = length(catch) + 1
   P = vector(); ## state vector
   P[1] = P1
   Pmean = vector();
   Pmean[1] = P1;
   
-  for (t in 2:N) {
+  for (t in 2:n_t) {
     Pmean[t] = log(max(P[t-1] + r*P[t-1]*(1-P[t-1]) - catch[t-1] /  K , 0.01));
     P[t] = rlnorm(1, Pmean[t],pro_std);
   }
   
-  obs = rlnorm(N, log(q*P*K),obs_std);
+  obs = rlnorm(n_t, log(q*P*K),obs_std);
   
   return( list(P_state = P, P_mean = Pmean, obs = obs, state = P*K))
 }
@@ -276,6 +280,7 @@ surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed 
 #' @title surplus_production_model_re_parameterised
 #' @description Returns a list of model quantities and observations that can be used as an operating model
 #' this is more for helping me debug mu model
+#' @param n_t number of time steps
 #' @param log_jt <real> states specified as J_t = B_t / K
 #' @param r <real> intrinsic growth parameter.
 #' @param k <real> carrying capacity parameter.
@@ -286,11 +291,11 @@ surplus_production_millar = function(K, r, q, P1, obs_std, pro_std, catch, seed 
 surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catchability) {
   ## do some checks up front
   if (length(catchability) == 1) {
-    catchability = rep(catchability, Y)
+    catchability = rep(catchability, n_t)
   }
   
-  if (length(catchability) != Y) {
-    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", Y,"' years values, please sort this out"))
+  if (length(catchability) != n_t) {
+    stop(paste0("need the same number of catchabilities as years (catches + 1), you supplied '", length(obs_std), "' observation standard devs, but '", n_t,"' years values, please sort this out"))
   }
   
   Bt = exp(log_jt) * k;
@@ -300,7 +305,7 @@ surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catc
   exploitation = vector();
   predicted_biomass[1] = Bt[1]
   
-  for (t in 1:(Y - 1)) {
+  for (t in 1:(n_t - 1)) {
     predicted_biomass[t+1] = (Bt[t] + r*(1 - Bt[t] / k)* Bt[t] - catches[t])
   }
 
@@ -313,29 +318,29 @@ surplus_production_model_re_parameterised = function(log_jt, r, k, catches, catc
 #' @title theta_logistic
 #' @description log-transformed theta logistic population growth model
 #' (Wang, 2007)
-#' @param N_t number of time steps
+#' @param n_t number of time steps
 #' @param sig_obs = standard deviation to draw observations
 #' @param sig_pro = standard deviation of process error
 #' @param r <real> intrinsic growth parameter.
 #' @param x0 <real> initial state
 #' @param K <real> carrying capacity parameter.
-#' @param theta 
+#' @param theta non-linear parameter
 #' @return list of simulated data and derived quantities.
 #' @export
-theta_logistic = function(N_t, sig_obs, sig_pro, r, K, theta, x0) {
+theta_logistic = function(n_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;
-  for (i in 1:(N_t - 1)) {
+  for (i in 1:(n_t - 1)) {
     state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + rnorm(1,0,sig_pro)
   }
-  obs = rnorm(N_t, state, sig_obs);
+  obs = rnorm(n_t, state, sig_obs);
   return(list(state = state, obs = obs))
 }
 
 #' @title theta_logistic_q
 #' @description log-transformed theta logistic population growth model
 #' (Wang, 2007), with a catchability on index
-#' @param N_t number of time steps
+#' @param n_t number of time steps
 #' @param sig_obs = standard deviation to draw observations
 #' @param sig_pro = standard deviation of process error
 #' @param r <real> intrinsic growth parameter.
@@ -345,12 +350,12 @@ theta_logistic = function(N_t, sig_obs, sig_pro, r, K, theta, x0) {
 #' @param theta 
 #' @return list of simulated data and derived quantities.
 #' @export
-theta_logistic_q = function(q, N_t, sig_obs, sig_pro, r, K, theta, x0) {
+theta_logistic_q = function(q, n_t, sig_obs, sig_pro, r, K, theta, x0) {
   state = vector();
   state[1] = x0;
-  for (i in 1:(N_t - 1)) {
+  for (i in 1:(n_t - 1)) {
     state[i + 1] = state[i] + r * (1 - (exp(state[i])/K)^theta) + rnorm(1,0,sig_pro)
   }
-  obs = rnorm(N_t, state * q, sig_obs);
+  obs = rnorm(n_t, state * q, sig_obs);
   return(list(state = state, obs = obs))
 }

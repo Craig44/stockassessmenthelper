@@ -6,6 +6,7 @@
 \usage{
 general_surplus_production_model_sigma(
   seed = 123,
+  n_t,
   B1,
   m,
   r,
@@ -21,6 +22,10 @@ general_surplus_production_model_sigma(
 )
 }
 \arguments{
+\item{seed}{seed for random number generator}
+
+\item{n_t}{<integer> number of time-steps to run the model}
+
 \item{B1}{<real> starting exploited biomass}
 
 \item{m}{<real> shape parameter for the surplus production curve (m = 2 = schafer)}
@@ -42,6 +47,8 @@ general_surplus_production_model_sigma(
 \item{process_error}{(optional) time specific time deviations (epsilon_t,p) for each time step}
 
 \item{process_std}{(optional) standard deviation for process deviations corrections}
+
+\item{n_obs_series}{}
 }
 \value{
 Returns a list of model quantities and observations

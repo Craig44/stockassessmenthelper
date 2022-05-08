@@ -4,7 +4,7 @@
 #' @param resids_matrix a matrix[years,bins] that are standardised residuals from compositional data, rownames(resids_matrix) = years (y-axis), colnames(resids_matrix) = ages/length
 #' @return a ggplot bubble plot
 #' @importFrom reshape2 melt
-#' @importFrom ggplot2 ggplot geom_point scale_colour_manual scale_fill_manual scale_size_continuous theme
+#' @importFrom ggplot2 ggplot aes geom_point scale_colour_manual scale_fill_manual scale_size_continuous theme
 #' @examples 
 #' \dontrun{
 #' mpd = extract.mpd(path = system.file("extdata",package = "stockassessmenthelper"), file = "estimate.log")

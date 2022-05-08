@@ -4,12 +4,12 @@
 \alias{theta_logistic_q}
 \title{theta_logistic_q}
 \usage{
-theta_logistic_q(q, N_t, sig_obs, sig_pro, r, K, theta, x0)
+theta_logistic_q(q, n_t, sig_obs, sig_pro, r, K, theta, x0)
 }
 \arguments{
 \item{q}{<real> Catchability coeffecient}
 
-\item{N_t}{number of time steps}
+\item{n_t}{number of time steps}
 
 \item{sig_obs}{= standard deviation to draw observations}
 

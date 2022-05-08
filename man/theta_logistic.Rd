@@ -4,10 +4,10 @@
 \alias{theta_logistic}
 \title{theta_logistic}
 \usage{
-theta_logistic(N_t, sig_obs, sig_pro, r, K, theta, x0)
+theta_logistic(n_t, sig_obs, sig_pro, r, K, theta, x0)
 }
 \arguments{
-\item{N_t}{number of time steps}
+\item{n_t}{number of time steps}
 
 \item{sig_obs}{= standard deviation to draw observations}
 
@@ -17,7 +17,7 @@ theta_logistic(N_t, sig_obs, sig_pro, r, K, theta, x0)
 
 \item{K}{<real> carrying capacity parameter.}
 
-\item{theta}{}
+\item{theta}{non-linear parameter}
 
 \item{x0}{<real> initial state}
 }

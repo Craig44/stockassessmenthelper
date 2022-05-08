@@ -6,6 +6,14 @@
 \usage{
 pow(x, exponent)
 }
+\arguments{
+\item{x}{base value}
+
+\item{exponent}{the exponent to apply to base value}
+}
+\value{
+x^exponent
+}
 \description{
 pow exponential function, helpful when debugging C++ functions
 }
