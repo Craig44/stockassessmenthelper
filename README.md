@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Craig44/stockassessmenthelper/workflows/R-CMD-check/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions)
+[![Render & Deploy bookdown](https://github.com/Craig44/stockassessmenthelper/workflows/deploy_bookdown.yml/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions)
 <!-- badges: end -->
   
 # An R package with miscellaneous functions that I have found useful for my work
