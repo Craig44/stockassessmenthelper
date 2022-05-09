@@ -2,7 +2,6 @@
 
 This chapter will discuss some of the methods and functions available for simulating, estimating and visualising surplus production models [@polacheck1993fitting, @millar2000non].
 
-## Schaefers
 The first section covers surplus production models, this will aid me getting used to state space models and learning Stan [@carpenter2017stan] and TMB [@tmb]. The first surplus production model framework has two sub models the process model (Equation~\@ref(eq:processmodel)	) and the observation model (Equation~\@ref(eq:observationmodel)	). We start with a simple biomass dynamics model as it is one of the simplest stock assessment models available \cite{hilborn1992quantitative}, and requires minimal data (catch history, relative/absolute index of abundance).
 	
 \begin{equation}
