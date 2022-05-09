@@ -1,7 +1,9 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Craig44/stockassessmenthelper/workflows/R-CMD-check/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions)
 
-[![deploy_bookdown](https://github.com/Craig44/stockassessmenthelper/workflows/deploy_bookdown.yml/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions)
+[![renderbook](https://github.com/Craig44/stockassessmenthelper/actions/workflows/deploy_bookdown.yml/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions/workflows/deploy_bookdown.yml)
+
+[![pages-build-deployment](https://github.com/Craig44/stockassessmenthelper/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Craig44/stockassessmenthelper/actions/workflows/pages/pages-build-deployment)
 <!-- badges: end -->
   
 # An R package with miscellaneous functions that I have found useful for my work
