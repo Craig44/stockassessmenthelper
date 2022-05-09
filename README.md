@@ -7,12 +7,12 @@
 <!-- badges: end -->
   
 # An R package with miscellaneous functions that I have found useful for my work
-An R library with useful functions I have collected over time for plotting stock assessment and statistical stuff.
-There is also a few functions for interrogating CASAL stock assessment models. To view the Vignette online for example plots and functionality [click here](http://htmlpreview.github.io/?https://github.com/Craig44/stockassessmenthelper/blob/master/vignettes/ExampleUseage.html)
+A bookdown showing how to use the package with examples [can be found here](https://craig44.github.io/stockassessmenthelper/)
+
 
 ## Installation
 ```r
-devtools::install_github("Craig44/stockassessmenthelper", build_vignettes  = TRUE)
+devtools::install_github("Craig44/stockassessmenthelper", build_vignettes  = F)
 ```
 
 
