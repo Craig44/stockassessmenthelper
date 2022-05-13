@@ -1,5 +1,5 @@
 
-# Distributions {#dists}
+# Distributions and Likelihoods {#dists}
 This section shows describes distributions that I have encountered and are commonly used in my work
 
 ## Gamma
@@ -295,5 +295,90 @@ In TMB \(\boldsymbol{\theta}\) is parametrised as unbounded parameters where for
 ### Toeplitz structure {-}
 The next natural step would be to reduce the number of parameters by collecting correlation parameters within the same off-diagonal. This amounts to \(n - 1\) correlation parameters and \(n\) variance parameters. The diagonal elements are all approximately equal to the true total variance \(2\sigma^2AR+2\sigma_0^2=2\), and the off-diagonal elements are approximately equal to the expected value of \(0.7/2=0.35.\)
 
+
+## Censored likelihoods
+This follows from work by [@cadigan2015state], who looked at censored likelihoods to account for underreporting catch. This is in the context of fitting to catch so he would be assuming the baranov catch equation with estimable fishing mortalities.
+
+```{r plot_catches}
+#'
+#' Follows Cadigan (2016) "A state-space stock assessment model for northern cod
+#' including under-reported and variable nvatural mortality rates" Equation~7. 
+#' This function shows the log-likelihood surface between bounds for a range of
+#' parameters and catches
+
+posfun = function(x, eps) {
+  denom = 2;
+  denom = denom - x/eps;
+  ans = ifelse(x > eps, x, eps/denom);
+  penalty = ifelse(x > eps, 0.0, 0.01 * (x - eps) * (x - eps));
+  return(list(new_x = ans, pen = penalty))
+}
+
+#' catches<vector> catches to look at the profile over
+#' upper<scalar> upper bound for censored likelihood
+#' lower<scalar> lower bound for censored likelihood
+#' sigma<scalar> standard deviation for censored likelihood
+#' delta<scalar> delta the minium to look at 
+
+catch_ll = function(catches, upper, lower, sigma, delta) {
+  ll = vector()
+  for(i in 1:length(catches)) {
+    diff = pnorm(log(upper / catches[i]) / sigma) - 
+      pnorm(log(lower / catches[i]) / sigma)
+    ad_buffer = posfun(diff, delta)
+    ll[i] = log(ad_buffer$new_x) + ad_buffer$pen
+  }
+  return(ll)
+}
+
+## run through
+L_y = 3000
+U_y = 4000
+sigma = 0.01
+delta = 0.025
+catches = seq(2000,5000, by = 1)
+ll = catch_ll(catches, upper = U_y, lower = L_y, sigma, delta)
+
+plot(catches, ll, type = "l", lwd = 3, lty = 1, xlab = "Catches", ylab = "Log-likelihood")
+
+
+#' Issues with the above "The log-likelihood can be very small even for values of Cy that are slightly
+#' outside of the bounds, and this can lead to problems when optimisizing the likelihood."
+#' Add a mixture
+#'
+#'
+catch_ll_mixture = function(catches, upper, lower, sigma, prob, sigma_astrix, delta) {
+  ll = vector()
+  for(i in 1:length(catches)) {
+    diff = (prob * pnorm(log(upper / catches[i]) / sigma) + (1 - prob) * pnorm(log(upper / catches[i]) / sigma_astrix)) - 
+      (prob * pnorm(log(lower / catches[i]) / sigma) + (1 - prob) * pnorm(log(lower / catches[i]) / sigma_astrix))
+    ad_buffer = posfun(diff, delta)
+    ll[i] = log(ad_buffer$new_x) + ad_buffer$pen
+  }
+  return(ll)
+}
+
+sigma_astrix = 0.075
+prob = 0.9
+ll_mix = catch_ll_mixture(catches, upper = U_y, lower = L_y, sigma, prob, sigma_astrix, delta)
+
+
+par(mfrow= c(2,1), oma = c(3,3,1,1), mar = c(2,1,1,1), cex.lab = 2, cex.axis = 1.5)
+plot(catches, ll, type = "l", lwd = 5, lty = 1, xlab = "", ylab = "", ylim = c(-5, 0.5), xlim = c(2250, 4800))
+lines(catches, ll_mix, lty = 2, lwd = 5, col = "red")
+legend('topright', cex = 1.2, legend = c(expression(paste(sigma[c], " = ", 0.01)), expression(paste(sigma[c], "* = ", 0.075)),
+                              expression(paste(L[c], " = ", 3000)), expression(paste(U[c], " = ", 4000)),
+                              expression(paste(p, " = ", 0.9)), expression(paste(epsilon, " = ", 0.025))))
+#legend("topright", legend = c("Original", "Mixture"), col = c("black","red"), lwd = 5, lty = c(1,2))
+## is the top of flat
+catch_ndx = catches > (L_y + 200) & catches < (U_y - 300)
+polygon(x = c(min(catches[catch_ndx]), min(catches[catch_ndx]), max(catches[catch_ndx]),max(catches[catch_ndx])), y = c(-0.4, 0.4, 0.4, -0.4), lwd = 3, lty = 2)
+plot(catches[catch_ndx], ll[catch_ndx], type = "l", lwd = 5, ylim = c(-0.04, 0.01), ylab = "", xlab = "", xlim = c(min(catches[catch_ndx]), max(catches[catch_ndx])))
+lines(catches[catch_ndx], ll_mix[catch_ndx], lwd = 5, col = "red", lty = 2)
+legend("bottomright", legend = c("Original", "Mixture"), col = c("black","red"), lwd = 5, lty = c(1,2))
+mtext(side = 2, outer = T, adj = 0.5, las = 3, text = "Log-likelihood", line = 1.5, cex = 2)
+mtext(side = 1, outer = T, adj = 0.5, las = 1, text = "Catches", line = 1.5, cex = 2)
+
+```
 
 
