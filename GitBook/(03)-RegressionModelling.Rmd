@@ -11,3 +11,12 @@ I have applied them.
 
 
 ## GLMM
+
+
+## Multivariate
+
+### Delta Method
+
+
+### Thorsons method 
+[@thorson2018three]
