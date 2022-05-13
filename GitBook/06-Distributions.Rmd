@@ -1,0 +1,299 @@
+
+# Distributions {#dists}
+This section shows describes distributions that I have encountered and are commonly used in my work
+
+## Gamma
+The density for the Gamma, is parameterised either by the shape ($k$) and scale (\(\theta\)) or the shape (\(\alpha\)) and rate parameter (\(\beta\)). Many of the models I apply to represent the Gamma (and general model frameworks such as GLM) have coefficients to define the moments i.e., mean $E[Y] = \mu = k\theta$ and variance $Var[Y] = \mu^2/\phi$, where \(\phi = 1/k\) is the dispersion coefficient (estimable). These moments can be expressed back as the original Gamma parameters. The likelihood for the Gamma follows
+\begin{equation}
+	l = \prod \frac{1}{\Gamma(k) \theta^{k}} x_i^{k - 1} e^{x_i/\theta}
+\end{equation}
+and log-likelihood
+\begin{equation}
+ll = \sum  -log(\Gamma(k)) - klog(\theta) + (k - 1)log(x_i) + {x_i/\theta}
+\end{equation}
+
+so calculating \(\theta\) and \(k\) from \(\mu\) and \(Var\).
+
+\[k = \frac{\mu}{\theta} \]
+and then substituting \(k\) into the variance definition to solve for \(\theta\)
+
+\[Var[Y] = \mu^2/\phi = \mu\theta\]
+
+Given \(\phi\) is an estimable parameter we want to re-arrange the above to make \(\theta\) a function of \(\mu\) and \(\phi\).
+
+\[\theta = \frac{\mu}{\phi}\]
+```{r gamma}
+# credit for this code https://stat.ethz.ch/pipermail/r-help/2011-July/283736.html
+set.seed(1001)
+shape = 2
+scale = 3
+z <- rgamma(10000, shape = shape ,scale = scale)
+var(z)
+# shoudl be close to 
+shape * scale^2
+# calculate CV
+1/sqrt(shape)
+sd(z) / mean(z) # compare to cv
+#> [1] 1.002399
+## inverse link GLM
+g1 <- glm(z ~ 1, family = Gamma(link = "inverse"))
+summary(g1)
+#Here the intercept estimate is 0.167 , which is very
+#nearly 1/6 = 1/(shape*scale) -- i.e. the Gamma GLM is
+#parameterized in terms of the mean (on the inverse scale).  
+# If you want to recover the scale parameter for the intercept case, then
+summary(g1)$dispersion / coef(g1)[1]
+
+## to get the scale parameter the log-link gamma model
+g2 <- glm(z ~ 1, family = Gamma(link = "log"))
+summary(g2)
+## scale param
+summary(g2)$dispersion * exp(coef(g2)[1])
+## shape param
+1 / summary(g2)$dispersion
+# the shape parameter (the reciprocal of the dispersion parameter)
+```
+
+
+
+## Dirichlet-Multinomial
+
+Using the linear parameterisation from [@thorson2017model]
+
+The Dirichlet-Mulitnomial can be applied using the linear re-parametrised approach from \citep{thorson2017model}. For the observed proportions at age $O_b$ for composition bin $b$ (age or length), with sample size $N$, expected proportions for the same bin denoted by $E_b$, and estimable overdispersion parameter \(\theta\) the negative log-likelihood is:
+
+\begin{align*}
+-\log \left(L \right) &=  -\log \Gamma \left(N + 1 \right) + \sum\limits_b \log \left( \Gamma \left(NO_b + 1\right) \right) + \\
+ & \ \ \ \log \Gamma \left(\theta N\right) + \log \Gamma \left(N + \theta N\right)  NO_b - \sum\limits_b \log (NO_b + \theta N E_b) - \log(\theta N E_b)
+\end{align*}
+which has an effective sample size \(n_{eff}\)
+\[
+n_{eff} \frac{1 + \theta N}{1 + \theta} = \frac{1}{1 + \theta} + n\frac{\theta}{1 + \theta}
+\]
+where effective sample size is a linear function of input sample size with intercept \((1 + \theta)^{-1}\)  and slope \(\frac{\theta}{1 + \theta}\). Interpreting \(\theta\) is if \(\theta\) is large then \(n_{eff} \rightarrow N\) and if \(\theta \ll N \) and \(N > 1\) then \(\theta\) can be interpreted as the ratio of effective sample size over input sample size.
+
+
+```{r dirichlet_multinomial}
+
+#' Return the Pdf for the dirichlet multinomial tried to copy from The 
+#' thorson paper. He deviates from the classic formulation by pulling out (x!) 
+#' of the denominator from the right hand product
+#' and moving it to the left denominator
+#' @param: obs vector of observed compositions assumes sum(pi) = 1
+#' @param: fitted vector of fiited compositions assumes sum(pi_fitted) = 1 
+#' @param: beta variance inflation coefficient
+#' @param: n is the total number of samples in the available data (which is restricted to any non-negative real number),
+#' @return PDF
+#'
+ddirichmult = function(obs, beta, n, fitted, log = F) {
+  if(sum(pi) != 1)
+    stop("pi needs to sum to 1")
+  if(sum(fitted) != 1)
+    stop("pi_fitted needs to sum to 1")
+  val = (lgamma(n + 1) + lgamma(beta)) - (lgamma(n + beta) + 
+               sum(lgamma(n*obs + 1))) + sum(lgamma(n*obs + beta * fitted) 
+                                             - lgamma(beta* fitted))
+  if(log == F)
+    val = exp(val)
+  return(val)
+}
+
+#' returns the negative log-likelihood for the dirichlet multinomial
+#' this is used in the TMB code, parameterised as theta.
+ddirichmult_alt = function(obs, theta, fitted) {
+  N_eff = sum(obs)
+  obs_prop = obs / N_eff
+  sum1 = sum2 = 0
+  for(i in 1:length(obs)) {
+    sum1 = sum1 + lgamma(N_eff * obs_prop[i] + 1);
+    sum2 = sum2 + lgamma(N_eff * obs_prop[i] + theta * N_eff * 
+                           fitted[i]) - lgamma(theta * N_eff * fitted[i])
+  }
+  nll = (lgamma(N_eff + 1) - sum1 + lgamma(theta * N_eff) - 
+           lgamma(N_eff + theta * N_eff) + sum2);
+  return(nll)
+}
+
+## run an example
+set.seed(123)
+n = 1000 ## sample size
+pi = rnorm(10, 50, 10)
+pi_fitted = rnorm(10,  50, 10)
+pi = pi / sum(pi)
+pi_fitted = pi_fitted / sum(pi_fitted)
+size = n 
+x = pi * n
+beta = 7
+theta = beta / n
+## evaluate different functions
+ddirichmult_alt(obs = x, theta = beta / sum(x), fitted = pi_fitted)
+ddirichmult(obs = x / sum(x), n = sum(x), fitted = pi_fitted,  beta = beta, log = T)
+
+```
+
+
+## Logistic Normal
+A key data type in age and length-structured stock assessment models is compositional data. The default in error structure for normalised (sum to 1) composition data sets is the multinomial [@francis2014replacing]. However there are often complex correlations in residuals when applying the multinomial distribution [@berg2016accounting; @francis2014replacing]. This make the additive logistic normal and multinomial on centred log transform attractive, because the transformed compositions are assumed to be multivariate random variables. This allows for complex correlation structures to be explored. 
+
+
+Normalised composition data can be viewed as a simplex. Consider a specific simplex, the so-called \(D - 1\) standard simplex, subset of \(\mathbb{R}^D\), which is defined by
+
+\begin{equation}\label{eq:simplex}
+\tilde{S}^D = \boldsymbol{x} = (x_1, x_2, \dots, x_D) \in \mathbb{R}^D | x_i \geq 0, \sum\limits_{i = 1}^D x_i  = 1
+\end{equation}
+
+The additive log ratio (ALR) transformation maps a simplex \(\tilde{S}^D\) to \(\mathbb{R}^{D-1}\), and the result for an observation \(\boldsymbol{x} \in \tilde{S}^D\) are coordinates \(\boldsymbol{y} \in \mathbb{R}^{D - 1}\) with
+
+\begin{equation}\label{eq:alr_transform}
+\boldsymbol{y}  =  (y_1,y_2,\dots,y_{D - 1})' = alr(\boldsymbol{x}) = \left(ln\frac{x_1}{x_j}, \dots, ln\frac{x_{j-1}}{x_j},ln\frac{x_{j + 1}}{x_j}\right)
+\end{equation}
+
+The index \(j \in [1,\dots, D]\) refers to the variable that is chosen as ratioing variable in the coordinates. This choice usually depends on the context, but also on the suitability of the results for data exploration. The main disadvantage of alr is the subjective choice of the ratioing variable. 
+
+
+
+The centred log ratio (CLR) transformation maps a simplex \(\tilde{S}^D\) to \(\mathbb{R}^{D}\), and the result for an observation \(\boldsymbol{x} \in \tilde{S}^D\) are coordinates \(\boldsymbol{y} \in \mathbb{R}^{D}\) with
+
+\begin{equation}\label{eq:clr_transform}
+\boldsymbol{y} = clr(\boldsymbol{x}) = (y_1, \dots,y_D)'= \left(ln\frac{x_1}{\sqrt[D]{\prod\limits_{k = 1}^Dx_k}} , \dots, ln\frac{x_D}{\sqrt[D]{\prod\limits_{k = 1}^Dx_k}}\right)
+\end{equation}
+
+
+
+[@francis2014replacing] (Appendix) suggests defining a multivariate normal variable \(\boldsymbol{X} \sim \mathcal{MVN} \left(\boldsymbol{\mu}, \boldsymbol{\Sigma}\right)\) in [@schnute2007compositional] \(\boldsymbol{\mu} = log(E)\) and \(\boldsymbol{\Sigma}\) is the variance. With the relationship to the observed composition \(\boldsymbol{O} = (O_1,\dots, O_D)'\) 
+
+\begin{equation}\label{eq:schnute}
+O_i = \frac{e^{X_i}}{\sum_i e^{X_i}}
+\end{equation}
+
+Francis suggests using the two transformations, the ALR (Equation~\ref{eq:alr_transform}) to define a new variable \(\boldsymbol{Y} = alr(\boldsymbol{X})\), and \(\boldsymbol{Y} \sim \mathcal{MVN}\left(alr(\boldsymbol{E}), \boldsymbol{V}\right)\),
+
+\[
+\boldsymbol{V} = \boldsymbol{K}\boldsymbol{\Sigma}\boldsymbol{K}'
+\]
+
+with \(\boldsymbol{K}\) has dims \(D - 1 \times D\) which is an identity matrix \(I_{D-1}\) with an additional vector of \(\boldsymbol{-1}\) to the right.
+
+
+The other transformation is the centred log ratio transformation (Equation~\ref{eq:clr_transform}), with variable \(\boldsymbol{Z} \sim \mathcal{MVN}\left(clr(\boldsymbol{E}), \boldsymbol{\Gamma}\right)\)
+
+\[
+\boldsymbol{\Gamma} = \boldsymbol{F}'\boldsymbol{H}^{-1}\boldsymbol{V}\boldsymbol{H}^{-1} \boldsymbol{F}
+\]
+
+where, \( \boldsymbol{F}\) is the same structure as \(\boldsymbol{K}\) but instead of a vector of \(\boldsymbol{-1}\) the are positive \(\boldsymbol{1}\), \(\boldsymbol{H} =\boldsymbol{I}_{D-1} + 1\).
+
+
+The benefits of using the ALN, is that you can estimate the covariance with respect to the composition, the negative is that the transformed random variable \(\boldsymbol{Y}\) has \(D - 1\) bins and so relating residuals can be confusing to interpret. This is compared to CLT transformation \(\boldsymbol{Z}\) which has \(D\) bins for the transformed random variable, but the covariance \(\boldsymbol{\Gamma}\) is singular when using the above formula's. The other options is to construct \(\boldsymbol{\Gamma}\) from estimated parameters, but then it's hard to interpret the variance and correlation parameters, back to the original composition dataset.
+
+
+
+
+## Correlation structures
+### Estimating Correlations structures {-}
+We are interested in estimating correlation and covariance structures for variable \(X(t)\) which is a function of time \(t\). The aim is to estimate the covariance of over multiple time horizons \(cov(X(t),X(s)\) denoted as \(\boldsymbol{\Sigma}_X\). We look at four correlation structures, AR(1), Compound symmetry, unstructured and independence. Also how the parameters are parametrised and estimated. Standard deviation is estimated separately to the correlation structures. A good resource for TMB, specifically for glmmTMB [is here](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html). Another good resource regarding different correlation structures can be found  [here](https://www.iboldsymbol.com/support/knowledgecenter/SSLVMB_23.0.0/spss/advanced/covariance_structures.html)
+\subsection{Independence}
+The simplest and only has a single estimable parameter.
+\begin{equation}
+cov(X(t),X(s)) = \sigma^2
+\end{equation}
+
+
+### AR(1) {-}
+This is a first-order autoregressive structure with homogenous variances.
+\begin{equation}
+	cov(X(t),X(s)) = \sigma^2 \rho^{\lvert t - s\rvert}
+\end{equation}
+
+so the correlation structure
+\begin{equation*}
+\boldsymbol{\Sigma}_{\rho} = 
+\begin{pmatrix}
+1 & \rho  & \rho^2  &   \rho^3 \\
+ & 1 & \rho  &  \rho^2 \\
+ &   & 1 & \rho  \\
+ & & & 1
+\end{pmatrix}
+\end{equation*}
+where, \(\rho\) is bound between -1 and 1. To enforce this transformation a transformed parameter \(\phi \in \mathbb{R}\) is estimated which is unbounded, with the relationship to \(\rho\) being,
+
+\begin{equation}\label{eq:rho_transform}
+\rho = \phi / \sqrt(1 + \phi^2);
+\end{equation}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{../Figures/rho_transform.jpeg}
+	\caption{Example of the relationship of transformed and untransformed parameter from Equation~\ref{eq:rho_transform}}
+	\label{fig:rho_transform}
+\end{figure}
+
+###  Compound symmetry {-}
+This covariance structure has heterogenous variances and constant correlation between elements, the correlation parameter is estimated as the logistic function so is unbounded defined by \(\phi\) and mapped back to \([0,1]\) space using the inverse logistic function (Equation~\ref{eq:invlogit}), where \(\rho\) is generated as, if there are \(n\) maximum unit spacings.
+
+\begin{align*}
+a =& \frac{1}{n - 1}\\
+\rho =& logit^{-1}\left(\phi\right) \left(1 + a\right) + a
+\end{align*}
+
+\begin{equation}\label{eq:invlogit}
+logit^{-1}\left(x\right) = \frac{1}{1 + e^{-x}}
+\end{equation}
+
+
+so the correlation structure looks like
+\begin{equation*}
+\boldsymbol{\Sigma}_{\rho} = 
+\begin{pmatrix}
+1 & \rho  & \rho^2  &   \rho^3 \\
+& 1 & \rho  &  \rho^2 \\
+&   & 1 & \rho  \\
+& & & 1
+\end{pmatrix}
+\end{equation*}
+
+but with the heterogenenous variance the covariance is
+\begin{equation*}
+\boldsymbol{\Sigma}_{X} = 
+\begin{pmatrix}
+\sigma^2_1 & \sigma_1\sigma_2\rho  & \sigma_1\sigma_3\rho^2  &   \sigma_1\sigma_4\rho^3 \\
+& \sigma^2_2 & \sigma_2\sigma_3\rho  &  \sigma_2\sigma_4\rho^2 \\
+&   & \sigma^2_3 & \sigma_3\sigma_4\rho  \\
+& & & \sigma^2_4
+\end{pmatrix}
+\end{equation*}
+
+
+### Unstructured Correlations {-}
+This assumption has, \(n(n - 1 )/ 2\) parameters, which represent the lower triangle of the cholesky decomposition of the correlation matrix.
+
+\begin{equation}\label{eq:us_corre}
+\boldsymbol{\Sigma}_{\rho} = D^{-0.5}LL'D^{-0.5}
+\end{equation}
+
+where,
+\begin{equation}
+L = 
+\begin{pmatrix}
+1 &   &  &   \\
+\theta_{1,1} & 1 &   &   \\
+\theta_{2,1} & \theta_{2,2}  & 1 &   \\
+\theta_{3,1} & \theta_{3,2} & \theta_{3,3} & 1
+\end{pmatrix}
+\end{equation}
+
+with
+\begin{equation}\label{eq:D_dag}
+D = diag(LL')
+\end{equation}
+
+In TMB \(\boldsymbol{\theta}\) is parametrised as unbounded parameters where for a single parameter of \(L\) \(\theta_i\), this works out to [confirmed here](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html)
+\begin{equation}\label{eq:us_rho}
+\rho = \frac{\theta_i}{1 + \theta_i^2}
+\end{equation}
+
+### Toeplitz structure {-}
+The next natural step would be to reduce the number of parameters by collecting correlation parameters within the same off-diagonal. This amounts to \(n - 1\) correlation parameters and \(n\) variance parameters. The diagonal elements are all approximately equal to the true total variance \(2\sigma^2AR+2\sigma_0^2=2\), and the off-diagonal elements are approximately equal to the expected value of \(0.7/2=0.35.\)
+
+
+
