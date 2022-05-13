@@ -1,4 +1,4 @@
-# Regression modelling {#fishmortality}
+# Regression modelling {#regressionmodelling}
 Summarise some of the theory regarding Generalised Linear Model (GLM) and its extensions GAM, GLMM. As well as discussing tips when applying them and analyses 
 I have applied them.
 

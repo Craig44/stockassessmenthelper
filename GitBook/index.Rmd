@@ -1,5 +1,5 @@
 --- 
-title: "Using the stockassessmenthelper R package"
+title: "Stock assessment methods with the stockassessmenthelper R package"
 author: "C.Marsh"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -8,7 +8,7 @@ bibliography: [book.bib, packages.bib]
 url: https://craig44.github.io/stockassessmenthelper/
 # cover-image: path to the social sharing image like images/cover.jpg
 description: |
-  This is a gitbook demonstrating the use of the stockassessmenthelper package
+  This is a gitbook demonstrating the use of the R stockassessmenthelper package
 link-citations: yes
 github-repo: https://github.com/Craig44/stockassessmenthelper
 ---
