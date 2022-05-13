@@ -1,13 +1,64 @@
 # Regression modelling {#regressionmodelling}
 Summarise some of the theory regarding Generalised Linear Model (GLM) and its extensions GAM, GLMM. As well as discussing tips when applying them and analyses 
-I have applied them.
+I have applied them. My experience with these methods have been in the context of catch and effort data analysis. So most of this theory will follow that train of thought.
 
 ## GLM
+The response variable for each fishing event is the catch of a given stock denoted by \(\boldsymbol{y} = (y_1,\dots,y_n)^T\). All fishing events are spatially referenced where \(\boldsymbol{s} = (s_1, \dots, s_n)^T\) denotes a location within the spatial domain (\(s_i = \{x_i, y_i\}\)) and all fishing events have a temporal reference denoted by \(\boldsymbol{t} = (t_1, \dots, t_n)^T\). For certain fishing methods such as trawling there can also be an area-swept covariate denoted by \(\boldsymbol{a} = (a_1, \dots, a_n)^T\), in addition to a range of explanatory variables used to describe trends and variability in \(\boldsymbol{y}\) denoted by \(\boldsymbol{X_i} = (X_{i,1}, \dots, X_{i,p})\) containing \(p\) covariates. The general form of the GLM model is
+
+\begin{align}
+y_i | \eta_i, \boldsymbol{\phi} & \sim f(\eta_i; \boldsymbol{\phi}) \nonumber\\
+\eta_i &= g^{-1} \left(\boldsymbol{X_i}\boldsymbol{\beta}\right), \quad i = 1, \dots, n\label{eq:cpue_simp_2}
+\end{align}
+
+where, \(g()\) is the link function, \(f()\) is a density function with expectation \(\eta_i\) and dispersion parameter \({\phi}\). \(\boldsymbol{X_i}\) is the \(i^{th}\) row of the model matrix for the fixed effect coefficients, with estimable fixed effect coefficients \(\boldsymbol{\beta}\). In the case where \(\boldsymbol{y}\) is strictly positive, a commonly assumed form of \(g()\) is the natural logarithm \citep{gavaris1980use, maunder2004standardizing}. If this is assumed, Equation~\ref{eq:cpue_simp_2} can be extended to include an offset covariate (often an effort covariate) which change the response variable from catch to catch per unit of the offset covariate. In the following model the offset covariate is area
+\begin{align*}
+y_i | \eta_i, \boldsymbol{\phi} & \sim f(\eta_i; \boldsymbol{\phi}) \nonumber\\
+\eta_i &= a_i \exp \left(\boldsymbol{X_i}\boldsymbol{\beta}\right), \quad i = 1, \dots, n \ .
+\end{align*}
+
+To extract an index of abundance from this model, a temporal covariate denoted by \(\boldsymbol{\beta^t}\) was included in the model whether it was {practically significant} or not (\(\boldsymbol{\beta^t} \in \boldsymbol{\beta}, \ \boldsymbol{\beta^t} = (\beta_1^t, \dots, \beta_{n_t}^t)^T\)). Temporal covariates were represented as a factor so there is an estimable coefficient for each time-step. For example, if an annual index was of interest there would be an estimable coefficient for each year. The temporal coefficients were used to derive an index of abundance. For the case when \(g()\) is the natural log
+\[
+I_t = \exp(\beta^t) \ .
+\]
+Often the index of abundance reported is a scaled index whereby all elements of \(I_t\) are divided by the geometric or arithmetic mean \citep{francis2001evaluation, campbell2015constructing} over the entire reference period,
+\begin{equation}\label{eq:standardised_index}
+\tilde{I}_t = \frac{I_t}{\left(\prod\limits_{j = 1}^{n_t} I_j\right)^{1/n_t}} \ .
+\end{equation}
+
+Standard errors for \(\tilde{I}_t\) are provided by @francis_99_impact_corr. Interaction terms can also be included with \(\boldsymbol{\beta^t}\). For this case, an index of abundance is extracted for all levels of the interacting covariate and \(\boldsymbol{\beta^t}\).
 
 
 
 ## GAM
+A natural extension from the standard GLM is allowing nonlinear relationships between the explanatory variables and response variable. This is often implemented using the GAM framework [@wood2017generalized; @hastie1990generalized] where splines or smoother functions are added into the systematic component,
+\begin{align}
+y_i | \eta_i, \boldsymbol{\phi} & \sim f(\eta_i; \boldsymbol{\phi})\\
+\eta_i &= g^{-1} \left(\boldsymbol{X_i}\boldsymbol{\beta} + f_1({x_{1,1}}) + \dots  + f_p({x_{i,p}})\right), \quad i = 1, \dots, n
+\end{align}
 
+where \(f_p(.)\) is a spline or smoother function for covariate \(p\) with value \(x_{i,p}\). This allows greater flexibility between continuous covariates and the response variable.It is still assumed that \(\boldsymbol{\beta^t} \in \boldsymbol{\beta}\), and a relative index of abundance is derived in the same manner as the GLM. 
+
+
+Smoothers and splines split the covariate space into segments defined by \enquote{knots}. Each knot location in the covariate space is denoted by \(\boldsymbol{x^*} = (x_1^*, \dots, x_{p_n}^*)^T\) and has an associated basis function denoted by \(b_j(., x_j^*)\). The linear combination of basis functions along all knots make up the smoother \(f(.)\). Penalised smoothers  have the form,
+\begin{equation*}
+	f({x_{1}}) = \sum\limits_{j = 1}^{p_n} \beta_j \times b_j\left(x_{1}, x_j^*\right)
+\end{equation*}
+
+where, \(j\) is one of \(p_n\) knots used with estimable coefficient \(\beta_j\). When estimating \(\beta_j\) the following penalty is added to the likelihood  
+\begin{equation*}
+	\lambda \int f^{''}(x)^2dx
+\end{equation*}
+
+where, \(f^{''}\) is the second order derivative of the smoothing function. Large values of the integral indicate high non-linearity where as values of zero indicate a straight line. Hence \(\lambda\) is a smoothing parameter (also termed the shrinkage parameter) that penalises for non-linearity. Large values of \(\lambda\) will amplify the penalty and which could lead the smoother towards a straight line. Small values will result in a lower penalty in the likelihood which can lead to a considerably non-linear form of the smoother. The above penalty can be reparameterisation into matrix form as
+\begin{equation*}
+\lambda \int f^{''}(x)^2dx = \lambda\boldsymbol{{\beta}^{T}S{\beta}} \ ,
+\end{equation*}
+where, \(\boldsymbol{S}\) is the penalty coefficient matrix (See Section~5.3.4 of @wood2017generalized). This penalty is applied with the following improper Gaussian prior
+\begin{equation*}
+\boldsymbol{\beta} \sim\ \mathcal{N}\left(\boldsymbol{0}, \lambda\boldsymbol{S}\right) \ ,
+\end{equation*}
+
+both \(\lambda\) and \(\boldsymbol{\beta}\) are estimated where \(\boldsymbol{\beta}\) is treated as a random-effect variable (see the following paragraph for details on random-effect variables).
 
 
 ## GLMM
@@ -15,8 +66,49 @@ I have applied them.
 
 ## Multivariate
 
-### Delta Method
+### Delta-Model
+In catch and effort analysis where \(y_i\) is the catch rates. If zero observations are present in the data, a common approach is to use the delta model or "hurdle" model [@cragg1971some]. This is where a dummy variable is created denoted by \(z_i\)
+
+\begin{equation}
+z_i
+\begin{cases}
+0, \quad \text{ if } y_i = 0\\
+1, \quad \text{ if } y_i > 0
+\end{cases}
+\end{equation}
+where \(z_i\) is modeled as a Bernoulli random variable. The second component deals with the strictly positive observations \(y_i > 0\). Generally a right-skew distribution (Lognormal or Gamma) is assumed which is conditional on \(z_i = 1\).
+
+\[
+y_i | z_i = 1 \sim f\left( \eta_i; \boldsymbol{\phi}\right)
+\]
 
 
-### Thorsons method 
-[@thorson2018three]
+
+### Poisson-link model
+The Poisson-link model is discussed in @thorson2018three. It describes the probability of encounter \(p_i\) using \(\eta_i\) which is the expected density at location \(i\), where the number of individuals at location \(i\) follow a Poisson Process with expectation \(\eta_i\). The encounter probability from this process follows,
+\begin{equation}
+p_i = 1 - \exp \left(-a_i \eta_i\right)
+\end{equation}
+where, \(a_i\) denotes the area swept. The predicted density is modeled using a log link linear predictor
+\[
+log(\eta_i) = \boldsymbol{X\beta}
+\]
+To convert numbers to biomass density denoted as \(d_i\) a second term is added denoted by \(w_i\). This is biomass per group of individuals (this terminology is not super clear to me). Biomass density is then \(d_i = \eta_i w_i\). Biomass density can also be defined as the product of encounter probability and catch rates. That is \(d_i = p_i y_i\). They do some rearranging to get
+\[
+y_i = \frac{\eta_i}{p_i} w_i
+\]
+where \(w_i\) is modeled as log linked predictor like \(\eta_i\).
+
+
+This model has similar distributional assumptions as the delta-model where, \(p_i\) is modeled using the Bernoulli distribution and \(y_i\) is represented by some right-skewed distribution conditional on a positive observation.
+
+
+## Catch and Effort thoughts
+### Whether to include area (or another effort variable) as an offset or not {-}
+Most of the catch and effort literature that I have read default to modelling catch rates. In most of the applications I have worked on we have modelled catch and put all the effort variables into the systematic component. The argument I have heard for this is that by putting area or some other unit of effort as an offset, that makes a linearity assumption. It is generally observed that catch will not increase linearly as a vessel fishes more area. That is why I have seen most analysis (mainly in New Zealand) model catch only and put all effort covariates including area (if it is significant) into the systematic component.
+
+
+
+### Statistical significance with large data {-}
+
+Catch and effort data are often large data sets (i.e., thousands if not hundreds of thousands of observations). Variable selection and hypothesis testing with large data sets often encounters the P-value problem [@chatfield1995problem, pg 70]. This is where model effects are classified as statistically significant due to decreasing standard errors as sample sizes increase. @chatfield1995problem state that for large sample inference, the aim is to identify terms of {practical significance}\index{Practical significance} based on the magnitude of the effect. In my work, {practically significant} effects have been identified using step-wise variable selection methods, and basing selection criteria on combinations of percent deviance and BIC. This removes the issue of including statistically significant terms that are not accounting for practical significance trends or variation in catches

@@ -1,9 +1,9 @@
 
 # Distributions and Likelihoods {#dists}
-This section shows describes distributions and likelihoods that I have used or found useful in my work.
+This section describes distributions and likelihoods that I have used or found useful to have as reference. These are the less frequent compared with the Normal and Multinomial etc.
 
 ## Gamma
-The density for the Gamma, is parameterised either by the shape ($k$) and scale (\(\theta\)) or the shape (\(\alpha\)) and rate parameter (\(\beta\)). Many of the models I apply to represent the Gamma (and general model frameworks such as GLM) have coefficients to define the moments i.e., mean $E[Y] = \mu = k\theta$ and variance $Var[Y] = \mu^2/\phi$, where \(\phi = 1/k\) is the dispersion coefficient (estimable). These moments can be expressed back as the original Gamma parameters. The likelihood for the Gamma follows
+The density for the Gamma is parameterised either by the shape ($k$) and scale (\(\theta\)) or the shape (\(\alpha\)) and rate parameter (\(\beta\)). Many of the models I apply to represent the Gamma (and general model frameworks such as GLM) have coefficients that define the moments i.e., mean $E[Y] = \mu = k\theta$ and variance $Var[Y] = \mu^2/\phi$, where \(\phi = 1/k\) is the dispersion coefficient (estimable). These moments can be reparameterised back to the original Gamma parameters. The likelihood for the Gamma follows
 \begin{equation}
 	l = \prod \frac{1}{\Gamma(k) \theta^{k}} x_i^{k - 1} e^{x_i/\theta}
 \end{equation}
@@ -56,7 +56,6 @@ summary(g2)$dispersion * exp(coef(g2)[1])
 ## Negative Binomial
 The negative binomial distribution is a discrete probability distribution that models the number of failures in a sequence of iid Bernoulli trials before a specified (non-random) number of successes (denoted \(r\)) occurs, with probability of success denoted by (\(p\)).
 
-
 \begin{equation}
 y \sim NB(\mu, \phi)
 \end{equation}
@@ -73,40 +72,44 @@ where, \(r\) is the number of failures until the experiment is stopped, and \(p\
 \]
 
 \[
-p = \frac{\sigma^2 - \mu}{\sigma^2}
+p = 1 - \frac{\sigma^2 - \mu}{\sigma^2} = \frac{\phi}{\phi + \mu}
 \]
-
-
-## Lognormal vs Normal-log
-Both the catch and relative indicie observations use the normal-log distribution specified as below
-\begin{equation}
- y_i \sim \mathcal{N}\left(\log(\mathbb{E}[y_i]), \sigma^2\right) \ . 
-\end{equation}
-Data is considered a constant with respect to the parameters, this is proportional to the lognormal distribution. This is demonstrated with the following R code.
-
-```{r log_norm, eval = TRUE, error = FALSE}
+```{r neg_bin}
 set.seed(123)
-sig = 0.5
-mu_x = -0.5*sig*sig
-x = rlnorm(100, mu_x, sig) # simulate lognormal variable
-sum(dnorm(log(x), mu_x, sig, log = T)) # evaluate log-like for normal-log
-sum(dlnorm(x, mu_x, sig, log = T))# evaluate log-like for lognormal
-sum(dnorm(log(x), mu_x, sig, log = T) - log(x))# evaluate log-like for normal-log adjusted
-```
+## generate nbinomial draw
+n_sim = 100
+phi = 100 # also = r 
+mu = rlnorm(n_sim, log(5), 0.4)
+var = mu + (mu^2/phi)
+p_success = phi/(phi+mu)  ## probability of success in each trial.
+p_fail = (var - mu) / var ## probability of failure in each trial.
+head(cbind(p_success, p_fail, 1 - p_success))
+## 
+r = mu^2 / (var - mu) ## = phi
+n = mu * (p_success / p_fail)
+summary(r)
+summary(p_fail)
+## simulates the number of failures which occur in a sequence of Bernoulli 
+## trials before a target number of successes is reached
+y_sim = rnbinom(n_sim, size = phi, mu = mu)
 
+## Calculate the densities the two ways
+sum(dnbinom(y_sim, size = phi, mu = mu, log = T))
+sum(dnbinom(y_sim, size = n, prob = p_success, log = T))
+```
 
 
 ## Dirichlet-Multinomial
 If \((p_1,\dots,p_k) \sim \mathrm{Dirichlet}(\alpha_1,\dots,\alpha_k)\) and \((x_1,\dots,x_k) \sim \mathrm{Multinomial}(n, p_1,\dots,p_k)\), then \((x_1,\dots,x_k) \sim \mathrm{DirichletMultinomial(n, \alpha_1,\dots,\alpha_k)}\).
 
-Probability density function 
+The probability density function is
 \begin{equation}
 f(x) = \frac{\left(n!\right)\Gamma\left(\sum \alpha_k\right)}{\Gamma\left(n+\sum \alpha_k\right)}\prod_{k=1}^K\frac{\Gamma(x_{k}+\alpha_{k})} {\left(x_{k}!\right)\Gamma(\alpha_{k})}
 \end{equation}
 
-with the dispersion parameter \(\beta\)
+with dispersion parameter \(\beta\)
 
-When simulating from this distribution we first simulate the dirichlet variable, using independent gamma draws (normalised), with shape parameter set as the fitted proportion. Then draw from the multinomial with expected composition based on the dirichlet draw.
+When simulating from this distribution you first simulate the dirichlet variable, using independent gamma draws (normalised), with shape parameter set as the fitted proportion. Then draw from the multinomial with expected composition based on the dirichlet draw.
 
 
 The Dirichlet-Multinomial using the linear re-parametrised approach from @thorson2017model. For the observed proportions at age $\tilde{\pi}_b$ for composition bin $b$ (age or length), with sample size $n$, expected proportions for the same bin denoted by $\pi_b$, and estimable overdispersion parameter \(\theta\) the negative log-likelihood is:
@@ -234,6 +237,25 @@ where, \( \boldsymbol{F}\) is the same structure as \(\boldsymbol{K}\) but inste
 
 
 The benefits of using the ALN, is that you can estimate the covariance with respect to the composition, the negative is that the transformed random variable \(\boldsymbol{Y}\) has \(D - 1\) bins and so relating residuals can be confusing to interpret. This is compared to CLT transformation \(\boldsymbol{Z}\) which has \(D\) bins for the transformed random variable, but the covariance \(\boldsymbol{\Gamma}\) is singular when using the above formula's. The other options is to construct \(\boldsymbol{\Gamma}\) from estimated parameters, but then it's hard to interpret the variance and correlation parameters, back to the original composition dataset.
+
+
+
+## Lognormal vs Normal-log
+Both the catch and relative index of abundance observations can use the normal-log distribution specified below
+\begin{equation}
+ y_i \sim \mathcal{N}\left(\log(\mathbb{E}[y_i]), \sigma^2\right) \ . 
+\end{equation}
+Data is considered a constant with respect to the parameters, this is proportional to the lognormal distribution. This is demonstrated with the following R code.
+
+```{r log_norm, eval = TRUE, error = FALSE}
+set.seed(123)
+sig = 0.5
+mu_x = -0.5*sig*sig
+x = rlnorm(100, mu_x, sig) # simulate lognormal variable
+sum(dnorm(log(x), mu_x, sig, log = T)) # evaluate log-like for normal-log
+sum(dlnorm(x, mu_x, sig, log = T))# evaluate log-like for lognormal
+sum(dnorm(log(x), mu_x, sig, log = T) - log(x))# evaluate log-like for normal-log adjusted
+```
 
 
 

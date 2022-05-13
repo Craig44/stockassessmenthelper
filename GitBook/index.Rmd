@@ -1,5 +1,6 @@
 --- 
-title: "Stock assessment methods with the stockassessmenthelper R package"
+title: "Stock assessment thoughts and notes"
+subtitle: "featuring the stockassessmenthelper R package"
 author: "C.Marsh"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -7,13 +8,16 @@ documentclass: book
 bibliography: [book.bib, packages.bib]
 url: https://craig44.github.io/stockassessmenthelper/
 # cover-image: path to the social sharing image like images/cover.jpg
+abstract: |
+  This book is a collection (probably quite scrappy) of notes that I often reference or want to look up. Historically I have managed a repository with many folders discussing these topics. This is an attempt to make an easy reference and more cohesive resource for future me and possibly others.
+  
 description: |
-  This is a gitbook demonstrating the use of the R stockassessmenthelper package
+  Stock assessment thoughts
 link-citations: yes
 github-repo: https://github.com/Craig44/stockassessmenthelper
 ---
 
-# About
+# Introduction
 
 
 ```{r install_packages}
