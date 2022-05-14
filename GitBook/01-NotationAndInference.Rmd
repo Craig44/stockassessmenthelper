@@ -1,0 +1,76 @@
+# Parameter notation and estimation
+I frequently flip between Frequentist and Bayesian estimation paradigms. This creates a lot of confusion regarding terminology and notation.
+
+
+Four symbols used throughout this book are \(\data, \bparam, \branp,\bfix\). These denote data, estimated fixed effect parameters, random variables and constant/control parameters (fixed and known) respectively. 
+
+
+## Fixed-effect vs Random-effect parameters
+A lot of the confusion exists in the literature regarding definition and usage of Fixed-effects denoted $\bparam$ vs Random effects denoted \(\branp\) see @gelman2005analysis; @mccullagh2005analysis;@KreftItaGG1998Imm_intro for discussions on terminology. This section aims at defining terms that are used throughout this book, with a review of historic usage.
+
+
+The term effect is interchangeable with model parameter. Fixed and  Random effects can be explained by comparing how factors or groups (e.g. schools, ethnicity, fishing vessels) are interpreted in controlled research experiments and observational studies. Factors that account for all treatments of interest and are in a controlled experiment are said to have a Fixed effect. Random effects are associated to factors whose treatments are a sample from an assumed super population. For example, take a balanced randomized experiment where two groups of fish are exposed to different food diets (probiotics and no probiotics), and some response variable recorded. The factor (food diets) would be considered a Fixed effect, as we are only interested in the relationship of those treatments to the response variable. Compare this to an observational study, where a sample of fishing boats are taken from a commercial fishing fleet, and catch rates recorded over a number of fishing events (response variable). The factor (fishing boats) can be thought of as a sample of the super-population (entire commercial fishing fleet) and could be treated as Random-effects. 
+
+
+However, labeling an effect as Fixed or Random can also be context specific, say for example that we only had a sample of fishing boats from a fleet. If the aim of inference was only for those boats and had no interest in the overall commercial fleet then they could be considered a Fixed effect factor. This reiterates the point that there is no hard and fast rule on how to treat model parameters as either Fixed or Random. Later on there will be discussions on when/why parameters are being treated as Fixed or Random. \textbf{Think about this with respect to, YCS parameters, we want to know the super-population so we can forecast, but we also want to focus on each individual YCS parameter. If the experiment was repeated, would you expect different YCS? what does that even mean? It is important to clarify this as this is very relevant for state-space models, and especially simulations}
+
+
+Although descriptions are useful when considering how to treat a model parameter, any ambiguity is removed with the use of mathematical equations. This is best illustrated using hierarchical models. Hierarchical models contain a hierarchy of lower level models nested in higher level model(s). Hierarchical models can subsume state-space models [@de2002fitting], multilevel models[@wang2011multilevel], random effect models [@laird1982random], mixed effect models [@longford1987fast], latent variable models [@millar2011maximum], and variance component models [@dempster1981estimation], although subtleties exist between these models, they generally assume a hierarchical structure. The concept of hierarchical levels is best illustrated, using a set of equations, for example,
+
+\begin{align}\label{eq:hierachy}
+	&\text{level 3}:  \phi | \bfix_{\phi} \sim P_3(\phi | \bfix_{\phi}) \quad \text{Omitted in Frequentist models}\\
+	&\text{level 2}:  \gamma_j | \phi \sim P_2(\gamma_j | \phi)\\
+	&\text{level 1}: y_j | \gamma_j , \phi \sim P_1(y_j | \gamma_j, \phi) \nonumber
+	(\#eq:hierachy)
+\end{align}
+
+where \(y_j\) is an observation and \(\gamma_j \) is a parameter governing the process that produces the observation, where \(\boldsymbol{\gamma} = (\gamma_1, \gamma_2, \dots,\gamma_j)\) are assumed interchangeable and from a common distribution that is controlled by estimable parameter \(\phi\). In the example above, \(\boldsymbol{\gamma}\) is a random-effect (sometimes termed latent or unobservable variables) (\(\boldsymbol{\gamma} \in \boldsymbol{u}\)) and \(\phi\) a "fixed effect" (\(\phi \in \boldsymbol{\theta}\)). 
+
+
+In frequentist inference, $\bparam$ are treated as fixed but unknown quantities and so level 3 would be omitted., whereas $\branp$ are treated as random variables. In contrast Bayesian inference treat all estimated parameters as random variables. The term "fixed effect" parameter in a Bayesian analysis is a bit of a misnomer, due to it still being treated as a random variable. The distinction between "Fixed" or Random effects from the Bayesian perspective **in this book** is whether the parameters that define the probability distribution are to be estimated (Random effect) or assumed fixed and known (Fixed effect). 
+
+
+
+The distinction between fixed effect and random effect parameters from a frequentist perspective (Bayesian only have one type of parameter random variables) can be further understood by looking at how uncertainty is expressed. Uncertainty about fixed but unknown parameters is expressed in terms of the variability in hypothetical replicate "experiments" generated by these parameters. Probability statements are made about the data given these fixed parameters, and not on the parameters themselves, "In other words, frequentists do not assign a probability to a (fixed effect) parameter; rather, they ask about the probability of observing certain kinds of data given certain values of the unknown parameters." @kery2011bayesian [pg 28]. This is in contrast to parameters treated as random quantities, where probability beliefs are made on the values the quantities takes.
+
+
+
+### Parameter transformations
+I was (still am)  confused with how to correctly deal with parameter transformations between fixed but unknown parameters and random variables. Let say I have a parameter \(\theta\) that is a fixed but unknown variable.
+
+\[
+\data \sim f\left(y|\theta\right)
+\]
+
+Now for computational/optimsiation/distributional reasons (often logging a parameter makes it easier to defend Gaussian probability statements) say I actually want to estimate \(\log \theta\). Do I need to "account" for this transformation? I don't think so as \(\theta\) is a fixed but unknown parameters. However lets say I was interested in the random effect parameter \(u\) with the following model assumptions
+\begin{align*}
+   u & \sim g_u(u|\theta)\\
+	 y & \sim f(y|u) \ .
+\end{align*}
+
+Again lets say we want to estimate \(u^* = h(u)\) instead of \(u\). Do we need to account for the change in variable? I think the answer is it depends. If we make probability statements regarding \(u^*\), that is we change the model to
+
+\begin{align*}
+   u^* & \sim g_{u^*}(u^*|\theta)\\
+   u & = h^{-1}(u^*) \\
+	 y & \sim f(y|u) \ .
+\end{align*}
+
+Then I don't think we need to account for the change of variable. However if we keep the earlier model and estimate \(u^*\) I think we need to account for the change of variable.
+
+\begin{align*}
+   u & = h^{-1}(u^*) \\
+   u & \sim g_u(u|\theta)\\
+	 y & \sim f(y|u) \ .
+\end{align*}
+
+now \(u\) is a derived quantity. The change of variable technique shifts that probability from \(u\) to \(u^*\)
+
+
+\begin{align*}
+   u^* & \sim g_u(h^{-1}(u^*)) \times | \frac{d}{du} h^{-1}(u)|\\
+   u & = h^{-1}(u^*) \\
+	 y & \sim f(y|u) \ .
+\end{align*}
+
+See [https://mc-stan.org/docs/2_21/stan-users-guide/changes-of-variables.html](here for) change in variable vs parameter transformation 

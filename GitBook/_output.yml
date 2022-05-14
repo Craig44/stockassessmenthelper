@@ -3,9 +3,9 @@ bookdown::gitbook:
   config:
     toc:
       before: |
-        <li><a href="./">A book stockassessment methods with R package</a></li>
+        <li><a href="./">Stockassessment thoughts</a></li>
       after: |
-        <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+        <li><a href="https://github.com/Craig44/stockassessmenthelper" target="blank">Github Repo</a></li>
     edit: https://github.com/Craig44/stockassessmenthelper/edit/main/%s
     download: ["pdf", "epub"]
 bookdown::pdf_book:

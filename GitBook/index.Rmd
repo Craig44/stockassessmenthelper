@@ -5,19 +5,30 @@ author: "C.Marsh"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
+
 bibliography: [book.bib, packages.bib]
 url: https://craig44.github.io/stockassessmenthelper/
 # cover-image: path to the social sharing image like images/cover.jpg
 abstract: |
-  This book is a collection (probably quite scrappy) of notes that I often reference or want to look up. Historically I have managed a repository with many folders discussing these topics. This is an attempt to make an easy reference and more cohesive resource for future me and possibly others.
-  
+  This book is a collection of notes (initialy it will be quite scrappy) that I often reference. Historically I managed a repository with many sub folders discussing these topics in isolation. This Book is an attempt to collate, create a more cohesive resource for future me and possibly others.
+
 description: |
   Stock assessment thoughts
 link-citations: yes
 github-repo: https://github.com/Craig44/stockassessmenthelper
 ---
 
+\newcommand{\data}{\boldsymbol{y}}  % data definition
+\newcommand{\bfix}{\boldsymbol{z}}  % Model constants/fixed values i.e. catch definition
+\newcommand{\bparam}{\boldsymbol{\theta}}  % Fixed effect parameters
+\newcommand{\branp}{\boldsymbol{u}}  % latent variable 
+\newcommand{\boldX}{\boldsymbol{X}}
+\newcommand{\bhypp}{\boldsymbol{\psi}}  % prior parameters
+\newcommand{\bvarp}{\boldsymbol{\xi}}  % observation variance parameters
+
 # Introduction
+Hopefully this 
+
 
 
 ```{r install_packages}

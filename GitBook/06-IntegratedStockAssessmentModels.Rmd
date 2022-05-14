@@ -1,4 +1,12 @@
-# Fishing mortality {#fishmortality}
+# Integrated stock assessment models {#integratedassessmentmodels}
+
+
+
+## Process model {#ProcessIntegrated}
+
+
+
+### Fishing mortality {-}
 A quick reminder of the commonly applied fishing dynamics applied in stock assessment models. A good general overview is by @branch2009differences. They compare the continuous Baranov Catch equation [@baranov1918question] vs Pope's discrete formulation [@pope1972investigation]. Arguments for using the continuous case is that $M$ and $F$ occur simultaneously, also with the continuous case, $F$ allows for multiple event encounters, this is assuming a fleet has the same selectivity and availability, that a fish that escapes one net can be caught in another. In contrast, the discrete formulation only allows a fish to be caught or escape from an instantaneous event. I have summarized the benefits of the continuous equation in the following list,
 
 *  Allows the entire population to be caught (not sure this is that relevant)
@@ -66,3 +74,4 @@ for(i in 1:length(Fs)) {
 mtext(side = 1, text = "Time", outer = T, line = 0.7, cex = 1.3)
 mtext(side = 2, text = "N", outer = T, line = -1, cex = 1.3)
 ```
+## Observation model {#observationIntegrated}
