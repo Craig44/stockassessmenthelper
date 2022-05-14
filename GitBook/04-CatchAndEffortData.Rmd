@@ -1,20 +1,82 @@
 # Catch and Effort grooming code {#CatchEffort}
 This section shows functions and methods that I have employed for analysising and grooming catch and effort fishery data.
 
-## Creating an example catch and effort data set
 
-This will simulate a catch and effort data set to illustrate the methods.
+## Grooming and generating a core data set
+Fishery-dependent catch and effort data generally contain reporting and typographic errors such as fishing events on land or unrealistically large catches. These fishing events are identified and removed to avoid influence in any analysis, a process often coined "grooming" in the CPUE standardisation literature [@bentley2012influence]. Another consideration of fishery-dependent catch and effort data is it often contains a number of events which occur outside the main stock habitat i.e., outside known depth range. In addition, some vessels may only operate in the fishery for short periods of time or sporadically over time. Information from these fishing events are unlikely to inform changes in relative abundance over the long term. A set of rules are generally applied to develop a "core" data set which represents consistent fishing behavior over time, space and with respect to fishing method. 
+
+A key component when creating a "core" data set is to demonstrate what the effect is on dropping non core fishing events. This includes how much catch, how many records, location and if the records dropped have common covariates that is separate to the core data set. Functions available for documenting grooming and subsetting rules include `record_grooming_rule` and `apply_grooming_rule` which are shown below.
 
 
-```{r simulate_data, fig.width=10, fig.height=2, fig.fullwidth=F}
-set.seed(123)
-n_time_steps = 10
-samples_per_year = 1000
-true_stock_density = c(rlnorm(n = n_time_steps / 2, 0.4, 0.5), rlnorm(n = n_time_steps / 2, 0.6, 0.9))
-plot(1:n_time_steps, true_stock_density, xlab = "Time", ylab = "True stock density", type = "l", lwd = 3)
+```{r groom_example}
+catch_effort_data = readRDS(file = system.file("extdata", "simulated_data.RDS", 
+                                               package = "stockassessmenthelper", mustWork = TRUE))
+# look at the data
+# head(catch_effort_data)
+
+## start grooming record
+start_records = nrow(catch_effort_data)
+## these are records to save the effects of grooming rules
+start_ndx = rep(T, nrow(catch_effort_data))
+total_grooming_record = record_grooming_rule(df = catch_effort_data, index = start_ndx, 
+                                             catch.col = "catch", record = NULL, rule = "Init") 
+yearly_catch_record = record_grooming_rule(df = catch_effort_data, index = start_ndx, catch.col = "catch", 
+            year.col = "fish_year", record = NULL, rule = "Init", attribute = "cumulative_catch")
+yearly_event_record = record_grooming_rule(df = catch_effort_data, index = start_ndx, catch.col = "catch", 
+            year.col = "fish_year", record = NULL, rule = "Init", attribute = "cumulative_events")
+
+
+## Remove unrealistic large catches (possible should consider imputing)
+large_catch_ndx = catch_effort_data$catch < 40000
+# record the rule
+total_grooming_record = record_grooming_rule(df = catch_effort_data, index = large_catch_ndx, 
+                      catch.col = "catch", record = total_grooming_record, rule = "catch > 40 t") 
+yearly_catch_record = record_grooming_rule(df = catch_effort_data, index = large_catch_ndx, 
+                      catch.col = "catch", year.col = "fish_year", record = yearly_catch_record, 
+                      rule = "catch > 40 t", attribute = "cumulative_catch")
+yearly_event_record = record_grooming_rule(df = catch_effort_data, index = large_catch_ndx, 
+                      catch.col = "catch", year.col = "fish_year", record = yearly_event_record, 
+                      rule = "catch > 40 t", attribute = "cumulative_events")
+# apply the rule to the data set
+catch_effort_data = apply_grooming_rule(catch_effort_data, large_catch_ndx)
+
+## Only look at Bottom Trawl data
+method_BT_ndx =catch_effort_data$method == "BT"
+# record the rule
+total_grooming_record = record_grooming_rule(df = catch_effort_data, index = method_BT_ndx, 
+                      catch.col = "catch", record = total_grooming_record, rule = "method BT") 
+yearly_catch_record = record_grooming_rule(df = catch_effort_data, index = method_BT_ndx, 
+                      catch.col = "catch", year.col = "fish_year", record = yearly_catch_record, 
+                      rule = "method BT", attribute = "cumulative_catch")
+yearly_event_record = record_grooming_rule(df = catch_effort_data, index = method_BT_ndx, 
+                      catch.col = "catch", year.col = "fish_year", record = yearly_event_record, 
+                      rule = "method BT", attribute = "cumulative_events")
+# apply the rule to the data set
+catch_effort_data = apply_grooming_rule(catch_effort_data, method_BT_ndx)
 ```
 
-illustrate that right skewed data could be an artifact of right skewed effort, and when we condition on some levels or covariate subspace the error distribution may actually be symmetric.
+If you apply the above functions you end up with records that can be plotted up using ggplot e.g
+
+```{r plot_catch_records}
+## plot records
+melt_total = melt(total_grooming_record, id.vars = "rule")
+melt_total$rule = factor(melt_total$rule, ordered = T, levels = total_grooming_record$rule)
+ggplot(melt_total %>% filter(variable %in%  c("catch")), aes(y = value /1000, x = rule, group = 1)) +
+  geom_line(size = 2, linetype = "dotted") +
+  geom_point(size = 4, aes(col = rule)) + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylab("Catch (000's t)") +
+  ylim(0,NA)
+
+ggplot(melt_total %>% filter(variable %in%  c("events")), aes(y = value /1000, x = rule, group = 1)) +
+  geom_line(size = 2, linetype = "dotted") +
+  geom_point(size = 4, aes(col = rule)) + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  ylab("events (000's)") +
+  xlab("") +
+  ylim(0,NA)
+
+```
 
 
 

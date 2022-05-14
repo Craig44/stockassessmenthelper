@@ -73,4 +73,4 @@ now \(u\) is a derived quantity. The change of variable technique shifts that pr
 	 y & \sim f(y|u) \ .
 \end{align*}
 
-See [https://mc-stan.org/docs/2_21/stan-users-guide/changes-of-variables.html](here for) change in variable vs parameter transformation 
+See (https://mc-stan.org/docs/2_21/stan-users-guide/changes-of-variables.html)[here for] change in variable vs parameter transformation 
