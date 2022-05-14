@@ -84,17 +84,22 @@ Data-weighting is the procedure of allowing for better representation of uncerta
 
 
 
-This section reviews the literature and describes current practices and beliefs when dealing with model-misspecification in an integrative analysis, which is often termed "data-weighting". In integrative statistical population models the weight assigned to each data set and within data sets controlled by the variance parameter of the likelihood function has been shown to have significant consequences on estimated parameters and derived quantities [@maunder2017data;@francis2011data].
+This section reviews the literature and describes current practices and beliefs when dealing with model-misspecification in an integrative analysis, which is often termed "data-weighting". Data weighting is an important consideration when providing management advice. In stock assessments, weighting of a data set is conducted by adjusting the variance parameter of the corresponding likelihood function (e.g. the $\sigma$ for the lognormal and $N$ for multinomial), and has been shown to have significant impacts on management advice [@maunder2017data;@francis2011data] (Figure \@ref(fig:b0conflict)). Data weighting is conducted to address data conflict and data prioritization. 
+
+
+
+Data conflict is the phenomenon that occurs when multiple data sets, conditioned on a model structure, provide information about a model parameter or estimated quantity that disagree. Given models are simplifications of reality and data are assumed facts the conflict must arise from model misspecification, but interpretation must account for random sampling error [@maunder2017dealing]. Figure \@ref(fig:b0conflict) demonstrates an example of data conflict for a stock assessment between age composition data and abundance data. How modellers deal with data conflict has been varied [@francis2011data] and is an active area of research in the stock assessment literature [@maunder2017data]
+
+
+Data prioritisation is the consideration of whether there are *a priori* arguments for one data set to have more influence over another. There have been arguments made in the stock assessment literature that independent data should have more weight (be more influential) [@cotter2004stock]. There have also been strong advocating that abundance or biomass data types should take precedence because management outcomes are directly related to these quantities [@rancis2011data].
 
 
 
 
-Data conflict occurs when two or more data-sets contain different information on process states or parameters conditional on a given model structure [@maunder2017dealing]. How modellers have dealt with this situation when it arises has been varied [@francis2011data] and is an active area of research in the stock assessment literature [@maunder2017data]. There are a few methods and procedures to deal with "data-conflict" that we will discuss and offer some methods for moving forward to a unified frame-work.
+![(#fig:b0conflict)A likelihood profile on unfished biomass parameter, $B_0$, illustrating data conflict, between abundance and age composition data. Each plotted line shows how the objective function (i.e., the negative log-likelihood) associated with some subset of the data varies across the profile, with each line being zero adjusted (i.e., shifted vertically so that its minimum (marked  "X") occurs at 0). The profile is from the 2010 assessment of New Zealand hake [@horn2010stock].](Figures/dat_weighting.png)
 
 
-
-A common suggestion or conversation in technical working groups when this situation arises is to assume one of the data-sources are un-representative of the system and so decrease the assumed precision of the likelihood contribution or remove the data-set all together. This is an ad-hoc method and as suggested by many, the decision of whether a data-set is representative should be made at the model inputs stage not after the fitting procedure. As once we have confidence in a data-set to be considered as an input for the stock assessment it should be considered "fact" @maunder2017dealing.
-
+A common suggestion or conversation in technical working groups (from my experience) when this situation arises is to assume one of the data-sources are un-representative of the system and so decrease the precision of the likelihood contribution or remove the data-set all together. This is an ad-hoc method and as suggested by many, the decision of whether a data-set is representative should be made at the model inputs stage not after the fitting procedure. Once we have confidence in a data-set to be considered as an input for the stock assessment it should be considered "fact" @maunder2017dealing.
 
 
 There have also been procedure recommended by @francis2011data which suggested the following steps,
@@ -103,34 +108,31 @@ There have also been procedure recommended by @francis2011data which suggested t
 * when weighting age or length composition data, allow for correlations.
 * do not down-weight abundance data because they may be unrepresentative.
 
-The reasoning behind these recommendations revolve around the importance of abundance signals in the context of the objectives of stock assessments, being mostly related to abundance. The second point is still important when observing residuals but with the recent inclusion of likelihoods that can allow for correlation among age and length. The third point is re-iterating the early methods of being cautious when dealing with un-representative data.
+The reasoning behind these recommendations revolve around the importance of abundance signals in the context of the objectives of stock assessments, being mostly related to abundance being the key stock status quantity. The second point is important when observing residuals but with the recent inclusion of likelihoods that can allow for correlation among age and length it should be becoming more routine. The third point is re-iterating the early comments about heed caution when dealing with un-representative data.
+
+
+There are three methods used for data weighting in stock assessments: *outside the model*, where weights are calculated and fixed during model estimation, *inside the model* where appropriate likelihoods are applied and likelihood variance parameters estimated, and *iterative* weighting [@francis2017revisiting], which applies the following algorithm.
+* Set initial weights for the data set
+* Conduct model estimation
+* Use information from the model output to adjust the data weights
+* Repeat steps 2 and 3 as often as desired
+
+
+While it has been used, the *outside the model* weighting method is not recommended [@francis2017revisiting]. The most objective method is the *inside the model* weighting method, choosing likelihoods that have variance parameters that can be estimated (self-weighting) for all data sets e.g. Dirichlet multinomial [@thorson2017model] [@aitchison1982statistical; @francis2014replacing] for compositional data and normal and lognormal for abundance time-series. Self-weighting likelihoods are becoming more prominent in stock assessment models but are still not the norm [@francis2017revisiting].
+
+
+The *iterative* weighting method is the most commonly applied method in New Zealand stock assessment models [@plenary_18]. Where for an observation denoted $O_t$ and a value expected by the model denoted $E_t$ at time $t$. The *Iterative* weighting methods aims to standardise the error $(O_t - E_t)$ so that the standardised errors ($S_{t}$) have constant variance for all time steps (and if age composition data for all ages) i.e. $S_{t} = (O_{t} - E_{t}) /N_{t}$, where $N_{t}$ is a function of the weighting parameter that can be updated during the iterative algorithm [@francis2011data]. The *iterative* weighting method is considered subjective for several reasons. The first reason is the choice of algorithms. There are a range of algorithms in the literature but there is no "best" algorithm [@punt2017some]. Secondly, data prioritisation has been advocated for with respect to abundance: for instance, @francis2011data recommends "do not let other data stop the model from fitting abundance data well". An interest of mine is looking at methods that remove subjectivity from stock assessments.
 
 
 
-The most recent advancement is the use of proper (as apposed to improper likelihoods such as the multinomial) observational likelihoods for compositional data, which have variance parameters that can be estimated by the model, such as the dirichlet and Dirichlet multinomial [@thorson2017model]. This approach has mainly been used in the state-space model framework, where comments are often made for example from @nielsen2014estimation "The state-space formulation of the model has several additional benefits which include: estimation of observation error which allows for objective weighting of multiple data sources," and from @cadigan2015state "This is done using an approach that avoids the use of subjective data-weighting". The benefit of estimating the weighting parameters in the assessment framework is the propagation of uncertainty of this some times influential parameter.
+The most recent advancement is the use of proper (as apposed to improper likelihoods such as the multinomial) observational likelihoods for compositional data, which have variance parameters that can be estimated as a parameter in the model, such as the dirichlet and Dirichlet multinomial [@thorson2017model]. This approach has mainly been used in the state-space model framework, where comments are often made for example from @nielsen2014estimation "The state-space formulation of the model has several additional benefits which include: estimation of observation error which allows for objective weighting of multiple data sources," and from @cadigan2015state "This is done using an approach that avoids the use of subjective data-weighting". The benefit of estimating the weighting parameters within the model is the propagation of uncertainty through to derived quantities.
 
 
 
-@francis2017revisiting argued that although "when we add process variation to a model we are likely to reduce the process error associated with an observation (and thus allow greater weight to be applied to the observation). However, it would be wrong to assume that we can remove all process error in a state-space stock assessment model because not all process error is associated with process variation: some is due to other factors, such as errors in either fixed parameters (e.g.,using the wrong parameter values for natural mortality or growth) or mathematical forms"
+@francis2017revisiting argued that "when we add process variation to a model we are likely to reduce the process error associated with an observation (and thus allow greater weight to be applied to the observation). However, it would be wrong to assume that we can remove all process error in a state-space stock assessment model because not all process error is associated with process variation: some is due to other factors, such as errors in either fixed parameters (e.g.,using the wrong parameter values for natural mortality or growth) or mathematical forms"
 
 
 
-There has been discrepancies I feel in state-space models in the literature where both process error and observation error have been estimated. This seem to be with confounding and parameter identifiability of the variance terms of both the process component and the observational component. This is the area of interest that I wish to pursue during my PhD. The specific questions and hypothesis that I have in mind are.
 
-
-* What data is needed to allow for confident estimation of process error and estimation error
-	
-
-	
-*	How can we extend the data weighting concept into state-space model framework where we can allow for the model to represent total error as Chris puts it	
-	
-* How to identify model mis-specification when using frequencies?
-	
-* What are the consequences of getting the process error terms wrong on model outputs (when multiple states are models)?
-	
-* are there merits in some state-space model formulations over others.
-
-
-These are general questions and I actually don't have any hypothesis for them so I am going to generate a simulation study to investigate these questions from a naive view point that I am not sure a if they are even answerable. So the emphasis will be on methodology so that I have a robust 'experiment' so that these questions can be investigated.
 
 
