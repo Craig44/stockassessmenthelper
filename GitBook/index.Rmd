@@ -39,7 +39,7 @@ packageVersion("stockassessmenthelper")
 ```
 
 Add other packages that are used throughout the book
-```{r other_packages, echo = T, results = 'hide'}
+```{r other_packages, results = 'hide', message=FALSE, warning=FALSE}
 library(dplyr)
 library(tidyr)
 library(reshape2)

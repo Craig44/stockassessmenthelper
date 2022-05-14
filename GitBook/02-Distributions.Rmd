@@ -240,26 +240,6 @@ The benefits of using the ALN, is that you can estimate the covariance with resp
 
 
 
-## Lognormal vs Normal-log
-Both the catch and relative index of abundance observations can use the normal-log distribution specified below
-\begin{equation}
- y_i \sim \mathcal{N}\left(\log(\mathbb{E}[y_i]), \sigma^2\right) \ . 
-\end{equation}
-Data is considered a constant with respect to the parameters, this is proportional to the lognormal distribution. This is demonstrated with the following R code.
-
-```{r log_norm, eval = TRUE, error = FALSE}
-set.seed(123)
-sig = 0.5
-mu_x = -0.5*sig*sig
-x = rlnorm(100, mu_x, sig) # simulate lognormal variable
-sum(dnorm(log(x), mu_x, sig, log = T)) # evaluate log-like for normal-log
-sum(dlnorm(x, mu_x, sig, log = T))# evaluate log-like for lognormal
-sum(dnorm(log(x), mu_x, sig, log = T) - log(x))# evaluate log-like for normal-log adjusted
-```
-
-
-
-
 ## Correlation structures
 ### Estimating Correlations structures {-}
 We are interested in estimating correlation and covariance structures for variable \(X(t)\) which is a function of time \(t\). The aim is to estimate the covariance of over multiple time horizons \(cov(X(t),X(s)\) denoted as \(\boldsymbol{\Sigma}_X\). We look at four correlation structures, AR(1), Compound symmetry, unstructured and independence. Also how the parameters are parametrised and estimated. Standard deviation is estimated separately to the correlation structures. A good resource for TMB, specifically for glmmTMB [is here](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html). Another good resource regarding different correlation structures can be found  [here](https://www.iboldsymbol.com/support/knowledgecenter/SSLVMB_23.0.0/spss/advanced/covariance_structures.html)
