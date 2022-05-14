@@ -32,14 +32,14 @@ github-repo: https://github.com/Craig44/stockassessmenthelper
 # Introduction
 
 
-
+Load library and check version number
 ```{r install_packages}
 library(stockassessmenthelper)
 packageVersion("stockassessmenthelper")
 ```
 
-
-```{r other_packages}
+Add other packages that are used throughout the book
+```{r other_packages, echo = T, results = 'hide'}
 library(dplyr)
 library(tidyr)
 library(reshape2)
