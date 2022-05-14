@@ -12,7 +12,7 @@ url: https://craig44.github.io/stockassessmenthelper/
 abstract: |
   This book is a collection of notes (initialy it will be quite scrappy) that I often reference. Historically I managed a repository with many sub folders discussing these topics in isolation. This Book is an attempt to collate, create a more cohesive resource for future me and possibly others.
   
-  **Disclaimer** This is a collection of my thoughts. If I have misrepresented your work or misunderstood your research, please contact me know I like to be corrected.
+  **Disclaimer** This is a collection of my thoughts. If I have misrepresented your work or misunderstood your research, [please contact me](mailto:craig.marsh10@gmail.com).
 
 
 description: |
