@@ -75,3 +75,62 @@ mtext(side = 1, text = "Time", outer = T, line = 0.7, cex = 1.3)
 mtext(side = 2, text = "N", outer = T, line = -1, cex = 1.3)
 ```
 ## Observation model {#observationIntegrated}
+
+
+
+
+### Data weighting {-}
+Data-weighting is the procedure of allowing for better representation of uncertainty to compensate for model misspecification. This results in better capturing the total error which is a combination of process error (model misspecification and process variation i.e., time-varying dynamics) and observation error (sampling error)
+
+
+
+This section reviews the literature and describes current practices and beliefs when dealing with model-misspecification in an integrative analysis, which is often termed "data-weighting". In integrative statistical population models the weight assigned to each data set and within data sets controlled by the variance parameter of the likelihood function has been shown to have significant consequences on estimated parameters and derived quantities [@maunder2017data;@francis2011data].
+
+
+
+
+Data conflict occurs when two or more data-sets contain different information on process states or parameters conditional on a given model structure [@maunder2017dealing]. How modellers have dealt with this situation when it arises has been varied [@francis2011data] and is an active area of research in the stock assessment literature [@maunder2017data]. There are a few methods and procedures to deal with "data-conflict" that we will discuss and offer some methods for moving forward to a unified frame-work.
+
+
+
+A common suggestion or conversation in technical working groups when this situation arises is to assume one of the data-sources are un-representative of the system and so decrease the assumed precision of the likelihood contribution or remove the data-set all together. This is an ad-hoc method and as suggested by many, the decision of whether a data-set is representative should be made at the model inputs stage not after the fitting procedure. As once we have confidence in a data-set to be considered as an input for the stock assessment it should be considered "fact" @maunder2017dealing.
+
+
+
+There have also been procedure recommended by @francis2011data which suggested the following steps,
+
+* do not let other data stop the model from fitting abundance data well.
+* when weighting age or length composition data, allow for correlations.
+* do not down-weight abundance data because they may be unrepresentative.
+
+The reasoning behind these recommendations revolve around the importance of abundance signals in the context of the objectives of stock assessments, being mostly related to abundance. The second point is still important when observing residuals but with the recent inclusion of likelihoods that can allow for correlation among age and length. The third point is re-iterating the early methods of being cautious when dealing with un-representative data.
+
+
+
+The most recent advancement is the use of proper (as apposed to improper likelihoods such as the multinomial) observational likelihoods for compositional data, which have variance parameters that can be estimated by the model, such as the dirichlet and Dirichlet multinomial [@thorson2017model]. This approach has mainly been used in the state-space model framework, where comments are often made for example from @nielsen2014estimation "The state-space formulation of the model has several additional benefits which include: estimation of observation error which allows for objective weighting of multiple data sources," and from @cadigan2015state "This is done using an approach that avoids the use of subjective data-weighting". The benefit of estimating the weighting parameters in the assessment framework is the propagation of uncertainty of this some times influential parameter.
+
+
+
+@francis2017revisiting argued that although "when we add process variation to a model we are likely to reduce the process error associated with an observation (and thus allow greater weight to be applied to the observation). However, it would be wrong to assume that we can remove all process error in a state-space stock assessment model because not all process error is associated with process variation: some is due to other factors, such as errors in either fixed parameters (e.g.,using the wrong parameter values for natural mortality or growth) or mathematical forms"
+
+
+
+There has been discrepancies I feel in state-space models in the literature where both process error and observation error have been estimated. This seem to be with confounding and parameter identifiability of the variance terms of both the process component and the observational component. This is the area of interest that I wish to pursue during my PhD. The specific questions and hypothesis that I have in mind are.
+
+
+* What data is needed to allow for confident estimation of process error and estimation error
+	
+
+	
+*	How can we extend the data weighting concept into state-space model framework where we can allow for the model to represent total error as Chris puts it	
+	
+* How to identify model mis-specification when using frequencies?
+	
+* What are the consequences of getting the process error terms wrong on model outputs (when multiple states are models)?
+	
+* are there merits in some state-space model formulations over others.
+
+
+These are general questions and I actually don't have any hypothesis for them so I am going to generate a simulation study to investigate these questions from a naive view point that I am not sure a if they are even answerable. So the emphasis will be on methodology so that I have a robust 'experiment' so that these questions can be investigated.
+
+

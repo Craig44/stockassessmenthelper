@@ -27,7 +27,7 @@ github-repo: https://github.com/Craig44/stockassessmenthelper
 \newcommand{\bvarp}{\boldsymbol{\xi}}  % observation variance parameters
 
 # Introduction
-Hopefully this 
+This is a collection of my thoughts. If I have miss represented anyone work or miss understood their research, please let me know I like to be corrected.
 
 
 
