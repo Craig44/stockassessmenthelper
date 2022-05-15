@@ -91,7 +91,7 @@ This section reviews the literature and describes current practices and beliefs 
 Data conflict is the phenomenon that occurs when multiple data sets, conditioned on a model structure, provide information about a model parameter or estimated quantity that disagree. Given models are simplifications of reality and data are assumed facts the conflict must arise from model misspecification, but interpretation must account for random sampling error [@maunder2017dealing]. Figure \@ref(fig:b0conflict) demonstrates an example of data conflict for a stock assessment between age composition data and abundance data. How modellers deal with data conflict has been varied [@francis2011data] and is an active area of research in the stock assessment literature [@maunder2017data]
 
 
-Data prioritisation is the consideration of whether there are *a priori* arguments for one data set to have more influence over another. There have been arguments made in the stock assessment literature that independent data should have more weight (be more influential) [@cotter2004stock]. There have also been strong advocating that abundance or biomass data types should take precedence because management outcomes are directly related to these quantities [@rancis2011data].
+Data prioritisation is the consideration of whether there are *a priori* arguments for one data set to have more influence over another. There have been arguments made in the stock assessment literature that independent data should have more weight (be more influential) [@cotter2004stock]. There have also been strong advocating that abundance or biomass data types should take precedence because management outcomes are directly related to these quantities [@francis2011data].
 
 
 
