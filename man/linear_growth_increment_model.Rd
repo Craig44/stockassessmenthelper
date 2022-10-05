@@ -24,6 +24,8 @@ vector mean growth increment for each length bins
 linear_growth_increment_model
 }
 \details{
-transpose of the traditional VB formulation into a linear increment model based on the
-the paper by R. I. C. C. Francis (1987)
+Growth increment model based on the transposed VB formulation based on \insertCite{francis1988maximum}{stockassessmenthelper}
+}
+\references{
+\insertAllCited{}
 }

@@ -1,0 +1,39 @@
+# Growth models {#growthmodels}
+In the R source code folder for this package, most growth functions are in the `growth_oarams.R` file. This is encase I forget to update the list of functions below.
+
+## Available functions
+
+* `vonbert()` Von Bertalanffy age-length relationship
+* `basic_weight()` basic length weight allometric relationship, accounts for a distribution of length at age. From memory it is the integrated weight over this distribution for lognormal distribution. However, I think it is fine for the normal distribution as for low CV's they are not that different.
+* `schnute()` Generalised Schnute age-length relationship
+* `basic()` basic length weight allometric relationship. Not as good as `basic_weight()`
+* `stretch()` does a CV linear interpolation by age used in CASAL to define cv by age
+* `cv_by_length()` does a length based interpolation of cv for the growth function
+* `transpose_VB()` transpose the traditional VB formulation into a linear increment model based
+* `linear_growth_increment_model()` the growth increment model
+
+
+## Illustrate the growth models
+```{r growth_VB}
+Linf = 155.9
+k = 0.116
+t0 = 2.495
+growth_incrs = transpose_VB(L1 = 50, L2 = 100, Linf = Linf, k = k, t0 = t0)
+g1 = growth_incrs[1]
+g2 = growth_incrs[2]
+
+years = 1:30
+length_over_time = vonbert(years, k, Linf, t0)
+
+# annual increment from growth increment formulation
+growth_increments = linear_growth_increment_model(length_mid_points = length_over_time, L1 = 50, L2 = 100, g1, g2)
+
+## should be the same as or close enough
+## plot the increment model
+plot(length_over_time[1:(length(length_over_time) - 1)], diff(length_over_time), xlab = "Length", ylab = "Increment", main = "Length increment over time")
+points(x = length_over_time, y = growth_increments, pch = 16, cex = 0.8, col = "red")
+## plot the resulting VBs
+plot(years, length_over_time, type = "o", xlab = "Time", ylab = "Length", main = "Length over time")
+points(x = years, y = c(length_over_time[1],length_over_time[1:(length(length_over_time) - 1)] + growth_increments[1:(length(growth_increments) - 1)]), pch = 16, cex = 0.8, col = "red")
+```
+

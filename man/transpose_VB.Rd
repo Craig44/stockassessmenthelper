@@ -25,7 +25,7 @@ transpose_VB
 }
 \details{
 transpose the traditional VB formulation into a linear increment model based on the
-the paper \insertCite{francis1988maximum}{stockassessmenthelper}
+paper \insertCite{francis1988maximum}{stockassessmenthelper}
 }
 \examples{
 \dontrun{
