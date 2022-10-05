@@ -1,0 +1,17 @@
+citHeader("To cite excursions in publications use:")
+
+bibentry(bibtype = "Article",
+  title = "stockassessmenthelper: an R package containing a bunch of fishery specific functionality",
+  author = c(person(given = "Craig A.",
+                    family = "Marsh")),
+             
+  year = "2022",
+  volume = "",
+  pages = "",
+  doi = "",
+  publisher = "",
+  textVersion  =
+      paste0("Craig A. Marsh (2020), ",
+             "{stockassessmenthelper}: an {R} package containing a bunch of fishery specific functionality",
+             "doi: ")
+)

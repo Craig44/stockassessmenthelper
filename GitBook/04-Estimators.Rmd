@@ -1,0 +1,74 @@
+# Estimators {#estimators}
+## Model-based vs Design-based estimators {-}
+
+Model-based and design-based are the main class of estimators that aim to infer population characteristics using sample data. Also referred to as the Fisher vs Neyman/Pearson inferential frameworks, where each named after the statisticians who proposed each @sterba2009alternative. Model-based inference stemmed from the idea that empirical random sample data was not always available, which is common in some fields etc. economic and psychology. So using models with distribution assumptions, was a concept proposed to mimic random sampling, even when empirical random sampling was present.
+
+"Fisher's model-based framework acknowledged at the outset that nonrandom sampling indeed affords no statistical basis for generalizing from sample statistics to parameters of a particular finite population. Here, a finite population is defined as all units which had a nonzero probability of selection into that particular sample" @sterba2009alternative}. Lets consider this idea of a 'Finite population'. The question regarding whether we have a finite vs infinite population becomes, does the sampling frame (which can be interchangeable with 'finite population') encompass all elements of the target population?, later you can see that in the design-based framework you can adjust selection probabilities to account for of these issues.
+
+In a fisheries/ecological discipline there are reasons why the sampling frame would not include the entire population i.e.
+
+* Areal coverage of population outside survey region (model-based can use covariates to infer population outside)
+*	 Cryptic individuals equivalent to non-response 
+
+However, we are only concerned with the case where the population of interest is some animal population within a defined area, where primary sampling units are spatial (transect, quadrant etc.)
+
+These seem to be all issues with the survey design, can they be avoided with a perfect survey design? (theoretically yes but in practice no) so model-based can be seen as a practical approach to use sample data that is not from a perfect survey design. Steps for implementing the model-based framework
+
+1. Construct a statistical model, describes how the covariates describe the response outcome.
+2. Treat the observed sample response data as realizations of a random variable. This is done by imposing distributional assumptions (_epistemically random_) e.g. Poisson, Normal or binomial
+3. Explicitly account for sample selection mechanisms (strata, clusters), if the data were selected in such a manner.
+
+
+Some other notes;
+"The targets of inference under Fisher’s framework are the model parameters", In our case these are nuisance parameters, derived quantities (functions) of these parameters are target for inference.
+"Because random variation in the observed outcome y is introduced by model assumption, not by design, data analysis under Fisher’s framework lacks a formal requirement of empirical random sampling" @sterba2009alternative
+
+
+"In contrast to Fisher, Neyman and Pearson (1933) deemed the construction of hypothetical infinite populations, and construction of models, to be fallible and subjective" @sterba2009alternative
+
+"Example finite population parameters are functions of the dependent variable y: the mean of y in the case of a census of the finite population, the total of y in the case of a census, or a ratio of totals. In the design-based framework, the outcome y is converted into a random variable, not through the introduction of epistemic randomness via imposition of distributional assumptions, as in the model-based framework, but exclusively through the introduction of empirical randomness from the random sampling design"; steps follow,
+
+1. specifying a random sampling frame, design, and scheme that together actually did generate y in the finite population
+2. Using only the known, nonzero probabilities of selection, cluster indicators, strata indicators, and observed y-values for sampled units not a statistical model a finite population parameter and its variance can be estimated
+
+Limitations/dis-advantages with design-based framework. No meaningful relationship between sampled outcomes and unsampled outcomes, other than them both having non-zero probability of selection. Also cannot make inference beyond target population and so limited to _descriptive inference_. Descriptive inferences have the property that, if all finite population units were observed without error (a perfect census), there would be no uncertainty in the inference.
+
+Another interesting point "design-based framework does not involve explicit attempts to write out a model for the substantive process that generated y-values in an infinite population. However, the sampling weight itself entails an implicit (or hidden) model relating probabilities of selection and the outcome" @sterba2009alternative
+
+so when to pick one approach over the other? Descriptive vs Casual inference, If you were to do a census (of the sampling frame) would there be zero uncertainty in population estimates? When there is no design based equivalents use model based? 
+
+"The history of this field is dominated by a design-based approach to inference, where the points (locations) are considered fixed and a detection function requires modeling and estimation. Inference is derived from random placement of transects. In contrast, when modeling spatial point patterns all points are assumed to be observed, rather than being fixed, they are assumed to be generated by a random process" @johnson2010model
+
+
+
+Some further investigations into this somewhat philosophical discussion. I have read the paper by @smith1976foundations. Which does a good review of the origins for design (conventional) based and model based estimators, somewhat leading towards the use of model based estimators. There are very interesting points made in responses to this paper. I take the response by Professor G. Kalton. they outlines the argument for a survey involving the estimation of some feature of a finite population, using Mean square error (MSE = \(V + B^2\) variance plus bias). They assume (for simplicity) that design based estimators are unbiased. Where as model based methods one cannot make this assumption, given even when a well chosen model may give a reasonable approximation, no informative model estimator will be an exact representation of a population, thus bias must exist. 
+
+Therefore the variance of a design based estimator decreases proportionality with sample size, but this does not apply for the MSE of the model estimator. All-though keep in mind this statement, which is somewhat related to fisheries. "However, as sample size increases, the conventional estimator will become superior and, since survey analyses are generally based on large samples, it will thus usually be more precise. Although the model estimator may be preferred for very small samples, it should be noted that it has the disadvantage of a bias of unknown magnitude."
+
+
+A re-occurring point both in the original paper and in some of the response is with regard to survey design and, the principal function of randomization, which is to guard surveys against selection bias. This is an important point with regard to accepting model based methods. If you believe these models enough, you will start to use them to generate "optimal" survey design's thus slipping into this grey area of selection bias, conditioned on your model's view of the world. This is re-iterated in @royall1970finite as follows
+
+"Roughly speaking, the basic function of randomization in experiments seems to be that of reducing the number of assumptions required for the validity of statistical inference procedures. This function has many aspects; of these, three of the most frequently described are (i) to protect against failure of certain probabilistic assumptions; (ii) to average out effects of unobserved or unknown random variables; and (iii) to guard against unconscious bias on the part of the experimenter. All of these objectives contribute to the general goal of making the results of the experiment convincing to others."
+
+
+For stratified random samples, are our observations independent? They are independently selected, but often we assume Tobler's law of geography, which implies things close together a related. This implies (_a priori_) our observations are independent if they are far away from each other which isn't the case. Much of the model based estimation in finite population sampling assumes measurements are independent e.g @bellhouse1987model
+
+
+__Some other throw away remarks__ Model-based approach, treats the population as a random realization from a super-population @bartolucci2006new, where as design-based approaches make no assumption to the underlying population, and are often advocated for, due to robustness to subjective decisions @WolterKirkM2007Itve.
+
+
+
+## My confusion 
+My confusion is exactly around what the variance represents between the design approach and model-based approach for the population total.
+	
+
+Design-based variance is steeped in the concept of hypothetically repeating an experiment (survey) many times, and the variability (that is estimated) represents the variability expected over these repeated experiments. The Model-based approach states, that the population at a point in time is a realization (random draw) from some hypothetical super-population and the variance is based on the idea that if we were to repeat an experiment (randomly draw another realisation from the super-population), that the variance (estimated) is that of the super-population. 
+
+
+Question: How does the conditionality principle enter this debate.
+
+"The idea behind the conditionality principle is to condition upon (i.e. treat as fixed) aspects of the experiment which contain no information about \(\boldsymbol{\theta}\). Some form of conditioning is vital in frequentist statistics, because it is needed to determine what exactly is meant by 'repetition of the experiment'" pg 304 @millar2011maximum
+
+
+I am getting confused because of this principle. Regardless of whether we consider Design or Model-based approach, if we were to repeat a survey for sessile organisms this would require changing the sampling locations. For mobile organisms we would expect the individuals to move, but total to remain constant.
+

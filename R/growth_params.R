@@ -92,3 +92,46 @@ cv_by_length <- function(cv1,cv2,mean_length_at_age) {
   n_bins = length(mean_length_at_age)
   return((mean_length_at_age - mean_length_at_age[1])*(cv2 - cv1)/(mean_length_at_age[n_bins]- mean_length_at_age[1]) + cv1)
 }
+
+#' transpose_VB
+#' @details transpose the traditional VB formulation into a linear increment model based on the
+#' paper \insertCite{francis1988maximum}{stockassessmenthelper}
+#' @importFrom Rdpack reprompt
+#' @param L1 length at reference 1, corresponds to g1
+#' @param L2 length at reference 2, corresponds to g2
+#' @param Linf mean asympote length
+#' @param k VB growth rate
+#' @param t0 VB age at length 0
+#' @param L1 length at reference 1
+#' @return vector<g1, g2> the linear growth increment model
+#' @examples 
+#'\dontrun{
+#' transpose_VB(L1 = 50, L2 = 100, Linf = 155.9, k = 0.116, t0 = 2.495)
+#'}
+#' @references
+#' \insertAllCited{}
+#'
+#'
+transpose_VB <- function(L1, L2, Linf, k, t0) {
+  g2 = ((Linf-(L2+t0))*((L1+t0)-(L2+t0))*(exp(-k)-1))/((L2+t0)-(L1+t0))
+  g1 = g2+(((L1+t0)-(L2+t0))*(exp(-k)-1)) 
+  return(c(g1,g2))
+}
+
+#' linear_growth_increment_model
+#' @details transpose of the traditional VB formulation into a linear increment model based on the
+#' the paper by R. I. C. C. Francis (1987)
+#' @param length_mid_points vector of lengths to calculate growth increment
+#' @param L1 length at reference 1, corresponds to g1
+#' @param L2 length at reference 2, corresponds to g2
+#' @param g1 growth rate at L1
+#' @param g2 growth rate at L2
+#' @return vector mean growth increment for each length bins
+#'
+linear_growth_increment_model <- function(length_mid_points, L1, L2, g1, g2) {
+  g2 = ((Linf-(L2+t0))*((L1+t0)-(L2+t0))*(exp(-k)-1))/((L2+t0)-(L1+t0))
+  g1 = g2+(((L1+t0)-(L2+t0))*(exp(-k)-1)) 
+  return(c(g1,g2))
+}
+
+

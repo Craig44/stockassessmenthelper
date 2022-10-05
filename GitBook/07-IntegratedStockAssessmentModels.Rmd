@@ -4,6 +4,9 @@
 
 ## Process model {#ProcessIntegrated}
 
+### Recruitment
+
+"The term 'recruitment' refers to the abundance of the earliest age at which a cohort can effectively be estimated ± usually the youngest age that they enter a fishery." [@myers1998environment]
 
 
 ### Fishing mortality {-}
