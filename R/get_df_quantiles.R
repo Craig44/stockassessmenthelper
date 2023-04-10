@@ -5,8 +5,8 @@
 #' @param y_value a string specifying the column to calculate the quanitles for
 #' @param quants numeric vector of values between 0-1 which define the quantiles to calculate.
 #' @return a dataframe of quantiles 
-#' @importFrom purrr map_chr partial set_names
-#' @importFrom dplyr group_by summarize_at %>% 
+#' @importFrom purrr map_chr partial set_names map
+#' @importFrom dplyr group_by summarize_at %>% across all_of vars
 #' @export
 get_df_quantiles <- function(df, group_vars, y_value, quants = c(0.025, 0.5, 0.975)) {
   if(!all(group_vars %in% colnames(df)))
