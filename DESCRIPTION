@@ -20,7 +20,7 @@ Imports: dplyr,
     utils,
     Rdpack,
     stats
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Suggests: 
     rmarkdown,
     knitr
